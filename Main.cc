@@ -3,7 +3,7 @@
     \file  Main.cc
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 26.11.09
+    \par Date of last change: 27.11.09
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-26
@@ -20,6 +20,8 @@
 
 /* my includes */
 #include "Main.h"
+#include "Containers.h"
+#include "ARFFFileHandler.h"
 
 
 const char c_HelpOption[] = "help";
@@ -86,11 +88,21 @@ int main(int argc, char **argv)
 {
   processCommandlineParameters(argc, argv);
   
-  std::cerr << "Using ARFF file handler library" << std::endl;
+  std::cerr << "*** Using ARFF file handler library ***" << std::endl;
 
-  TrainingsDataContainer* readData = ARFFFileHandler::load(g_inputfilename);
+  ArffFileHandling::ARFFFileHandler handler;
+  handler.load(g_inputfilename);
 
-  bool res = ARFFFileHandler::save(readData, g_outputfilename);
+  std::cerr<< "** Successfully loaded file :  " << g_inputfilename << std::endl;
+  
+  ArffFileHandling::TrainingsDataContainer* readData = handler.getData();
+  readData->print(std::cout);
+
+  std::cerr << "** Printed loaded data to standard output" << std::endl;
+  
+  bool res = handler.save(g_outputfilename);
+
+  std::cerr << "** Successfully stored data to a file :  " << g_outputfilename << std::endl;
 
   return res;
 }

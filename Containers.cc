@@ -203,9 +203,10 @@ bool ArffFileHandling::FeatureContainerSequence::append(ArffFileHandling::Featur
 // **********************************************************************
 // ***** TrainingsDataContainer stuff ***********************************
 
-ArffFileHandling::TrainingsDataContainer::TrainingsDataContainer()
+ArffFileHandling::TrainingsDataContainer::TrainingsDataContainer(unsigned int numberOfActivities)
 {
-  _numberOfActivities = 2;
+  _numberOfActivities = numberOfActivities;
+  _data.resize(_numberOfActivities);
 }
 
 ArffFileHandling::TrainingsDataContainer::~TrainingsDataContainer()
@@ -219,11 +220,9 @@ ArffFileHandling::TrainingsDataContainer::~TrainingsDataContainer()
 
 int ArffFileHandling::TrainingsDataContainer::getTotalNumberOfContainers() const
 {
-  assert (_data!=NULL);
-  
   int result=0;
   
-  for (int i=0; i<2; i++){
+  for (unsigned int i=0; i<_numberOfActivities; i++){
     for (unsigned int j=0; j<_data[i].size(); j++){
       result+= _data[i][j]->getSeqLength();
     }
@@ -233,9 +232,9 @@ int ArffFileHandling::TrainingsDataContainer::getTotalNumberOfContainers() const
   return result;
 }
 
-void ArffFileHandling::TrainingsDataContainer::addData(const int activity, ArffFileHandling::FeatureContainerSequence* newData)
+void ArffFileHandling::TrainingsDataContainer::addData(const unsigned int activity, ArffFileHandling::FeatureContainerSequence* newData)
 {
-  assert ( (activity==0 || activity==1) && newData!=NULL);
+  assert ( (activity < _numberOfActivities) && newData!=NULL);
   
   BGDBG (5, "Added data for activity %d with container at address %p\n", activity, newData);
   _data[activity].push_back(newData);
@@ -255,7 +254,7 @@ void ArffFileHandling::TrainingsDataContainer::printDataOnly(ostream& ostr) cons
   int featuresPerRow = getFrame(0,0,0)->getNumberOfFeatures();
   FeatureContainer* f=NULL;
   
-  for (int dataClass=0; dataClass<2; dataClass++){
+  for (unsigned int dataClass=0; dataClass<_numberOfActivities; dataClass++){
     for (unsigned int seqIt=0; seqIt<_data[dataClass].size(); seqIt++){
       for (int s=0; s<_data[dataClass][seqIt]->getSeqLength(); s++){
 	f = getFrame(dataClass,seqIt,s);
@@ -274,7 +273,7 @@ void ArffFileHandling::TrainingsDataContainer::printDataWithActivities(ostream& 
   int featuresPerRow = getFrame(0,0,0)->getNumberOfFeatures();
   FeatureContainer* f=NULL;
   
-  for (int dataClass=0; dataClass<2; dataClass++){
+  for (unsigned int dataClass=0; dataClass<_numberOfActivities; dataClass++){
     for (unsigned int seqIt=0; seqIt<_data[dataClass].size(); seqIt++){
       for (int s=0; s<_data[dataClass][seqIt]->getSeqLength(); s++){
 	f = getFrame(dataClass,seqIt,s);

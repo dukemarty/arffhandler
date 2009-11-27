@@ -205,7 +205,7 @@ namespace ArffFileHandling {
     unsigned int _numberOfActivities;
 
     //! list of training sequences, one for positive and one for negative examples
-    vector<FeatureContainerSequence* > _data[2];
+    vector< vector<FeatureContainerSequence* > > _data;
 
     /*!
       \brief Output extracted training data plain to output.
@@ -232,17 +232,17 @@ namespace ArffFileHandling {
   public:
     //@{
     //! \name Constructors & Destructors
-    TrainingsDataContainer();
+    TrainingsDataContainer(unsigned int numberOfActivities=2);
     ~TrainingsDataContainer();
     //@}
 
     //@{
     //! \name Getter & Setter
     unsigned int getNumberOfActivities() const { return _numberOfActivities; };
-    void addData(const int activity, FeatureContainerSequence* newData);
-    int getNumberOfSequences(const int activity) const { return _data[activity].size(); };
-    int getSequenceLength(const int activity, const int sequence) const { return _data[activity][sequence]->getSeqLength(); };
-    FeatureContainer* getFrame(const int activity, const int sequence, const int frame) const { return _data[activity][sequence]->getContainer(frame); };
+    void addData(const unsigned int activity, FeatureContainerSequence* newData);
+    int getNumberOfSequences(const unsigned int activity) const { return _data[activity].size(); };
+    int getSequenceLength(const int unsigned activity, const int sequence) const { return _data[activity][sequence]->getSeqLength(); };
+    FeatureContainer* getFrame(const int unsigned activity, const int sequence, const int frame) const { return _data[activity][sequence]->getContainer(frame); };
     int getTotalNumberOfContainers() const;
     //@}
 

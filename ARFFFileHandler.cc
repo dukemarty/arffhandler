@@ -6,7 +6,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 26.11.09
+    Date of last change: 27.11.09
 
     Revision: 0.1
 
@@ -21,87 +21,149 @@
 /* system includes */
 #include <assert.h>
 #include <fstream>
+#include <stdexcept>
 
 /* my includes */
 #include "ARFFFileHandler.h"
-#include "Enums.h"
-
-using namespace std;
+// #include "Enums.h"
 
 
-ArffFileHandling::TrainingsDataContainer* ArffFileHandling::ARFFFileHandler::load(string filename)
+ArffFileHandling::ARFFFileHandler::ARFFFileHandler()
 {
+  _valid = false;
+  _filename = "";
+  _data = NULL;
+}
+
+ArffFileHandling::ARFFFileHandler::ARFFFileHandler(string filename)
+{
+  _filename = filename;
+  _valid = true;
+  _data = NULL;
+
+  try {
+    load(filename);
+  } catch (ios_base::failure& e){
+    _filename = "";
+    _featList.clear();
+    _valid = false;
+    
+    delete _data;
+    _data = NULL;
+  }
+}
+
+ArffFileHandling::ARFFFileHandler::~ARFFFileHandler()
+{
+  delete _data;
+}
+
+void ArffFileHandling::ARFFFileHandler::clearData()
+{
+  delete _data;
+  _data = NULL;
+
+  _featList.clear();
+  _class2index.clear();
+  _index2class.clear();
+
+  _valid = false;
+  
+  assert (_valid == false);
+}
+
+void ArffFileHandling::ARFFFileHandler::printHeader(fstream& out, string filename) const
+{
+  // write meta header
+  out << "% 1.  Title:" << endl << "% " << filename.c_str() << endl << "%" << endl;
+  out << "% 2.  Created by:" << endl << "% ARFF Handler Library" << endl << "%" << endl;
+  out << "% 3.  Creation date:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
+  out << "% 4.  Creation time:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
+  out << "% 5.  Number of Instances:" << endl << "% " << _data->getTotalNumberOfContainers() << endl << "%" << endl;
+  out << "% 6.  Number Of Attributes:" << endl << "% " << getNumberOfFeatures() << endl << "%" << endl;
+  out << "% 7.  Attribute Information:" << endl << "%" << endl;
+  out << "% 8.  Class Distribution" << endl << endl;
+
+  out << "@relation '" << filename.c_str() << "-" << _class2index.size() << "-classes'" << endl << endl;
+	
+  // write attributes
+  for(unsigned int f=1; f<_featList.size(); f++){
+    if (_featList.find(f)->second == "class"){
+      out << "@attribute class {";
+      out << _index2class.find(0)->second;
+      for (unsigned int c=1; c<_index2class.size(); c++){
+	out << "," << _index2class.find(c)->second;
+      }
+      out << "}" << endl << endl;
+    } else {
+      out << "@attribute " << _featList.find(f)->second << " numeric" << endl;
+    }
+  }
+  out << endl;
+    
+  out << "@data" << endl;
+}
+
+bool ArffFileHandling::ARFFFileHandler::load(string filename)
+{
+  clearData();
+  
   //Open given File
   ifstream arffFile;                          
   arffFile.open(filename.c_str(), ios_base::in);
   
   //Successfully opened?
   if (!arffFile){    
-    BGDBG (3, "Throwing exception FileError\n");
-    throw FileError(__FILE__, __LINE__, filename, GenericFileError, "Open .arff file for loading feature sequence");
+    BGDBG (3, "Throwing exception ios_base::failure\n");
+    throw ios_base::failure("Open .arff file for loading feature sequence");
   }
 
-  list = new InputFeatureList();
-	
   /////////////////// Read attributes ///////////////////////////
-  //Add attributes with FeatureNumber unequal to fnNoFeatureNumber, to InputFeatureList
-  char buf[3072];	//TODO Improve: zeilenweises lesen umstellen auf blockweise
+  char buf[3072];
   bg::string attrName;
   int attributeCountAll = 0;
   while (arffFile.getline(buf, sizeof(buf))){
     //Check only lines starting with "@attribute"
     if(bg::string(buf).startsWith("@attribute")) {
-      attributeCountAll++;
       //Check FeatureNumber
       bg::strlist tokens = bg::string(buf).split(" ");
       attrName = tokens[1];
-      if(makeFeatureNumber(attrName) != fnNoFeatureNumber) {
-	list->addFeature(makeFeatureNumber(attrName));
+      if (attrName == "class"){
+	string classline(buf);
+	// parsing valid class values
+	int openPos = classline.find("{");
+	int closePos = classline.find("}");
+	bg::string values = classline.substr(openPos + 1, closePos - openPos - 1);
+	bg::strlist classValTokens = values.split(",");
+	for (unsigned int i=0; i<classValTokens.size(); i++){
+	  _class2index[classValTokens[i]] = i;
+	  _index2class[i] = classValTokens[i];
+	}
       } else {
+	if (tokens[2] != "numeric"){
+	  BGDBG (3, "Throwing exception domain_error\n");
+	  throw domain_error("Attribute is not numeric");
+	}
       }
+      _featList[attributeCountAll] = attrName;
+      attributeCountAll++;
     } else if(bg::string(buf).startsWith("@data")) {
       //Break if entering the data part
       break;
     }
   }
-  
-  // Reset get pointer position to stream beginning
-  arffFile.seekg( 0, ios_base::beg );
-  
-	
-  /////////////////// Build translation table ///////////////////
-  //Build a translation table for AttributeIndex (in the ARFF-File)  => index in the InputeFeatureList
-  int translationTable[attributeCountAll];
-  int attributeIndex = 0;	//index in the ARFF-File
-  while (arffFile.getline(buf, sizeof(buf))){
-    //Check only lines starting with "@attribute"
-    if(bg::string(buf).startsWith("@attribute")) {
-      bg::strlist tokens = bg::string(buf).split(" ");
-      attrName = tokens[1].c_str();
-      translationTable[attributeIndex] = list->findFeature(makeFeatureNumber(attrName));
-      attributeIndex++;
-    } else if(bg::string(buf).startsWith("@data")) {
-      //Break if entering the data part
-      break;
-    }
-  }
-  
-//   cout<<"Translation table:"<<endl;
-//   for(int i = 0; i < attributeCountAll; i++){
-//     cout << "[" << i << "]=" << translationTable[i] << " , ";
-//     if(i%20 == 0){ cout<<endl; }
-//   }
-//   cout<<endl;
-	
-	
-	
+
   /////////////////// Read data /////////////////////////////////
+  _data = new TrainingsDataContainer(_class2index.size());
+
+  _valid = true;
+
   //Reading data part line by line 
-  FeatureContainerSequence* data = new FeatureContainerSequence();
+  FeatureContainerSequence* currentSequence=NULL;
   FeatureContainer* instance;
-  FLOAT_T newData;	//stores one attribute in one line
-  int instanceCounter=0;
-  int listLen = list->getNumber();
+  double newData;	//stores one attribute in one line
+  int currentClass=_class2index.size();
+  
   while (arffFile.getline(buf, sizeof(buf))){
     //ignore comments, and if no "," is in the line, ignore it
     if(((bg::string(buf))[0] == '%') || ((bg::string(buf))[0] == '\n') || (bg::string(buf).find(",") == bg::string::npos) ){
@@ -109,173 +171,69 @@ ArffFileHandling::TrainingsDataContainer* ArffFileHandling::ARFFFileHandler::loa
     }
 
     //One instance per line
-    instance = new FeatureContainer(listLen);
-    attributeIndex = 0;	//index of the attributes in the current line/instance
-    instanceCounter++;
+    instance = new FeatureContainer(getNumberOfFeatures());
 
-    //Split the line at the seperators
+    
+    //Split the line at the separators
     bg::strlist tokens = bg::string(buf).split(",");
-    for (unsigned int i=0; i<tokens.size(); i++){
+    for (unsigned int attrCount=0; attrCount<tokens.size(); attrCount++){
       //save only attributes which are in the InputFeatureList (which means they translate to unequal -1)
-      if(translationTable[attributeIndex] != -1){
-	newData = tokens[i].toFloat();
-	instance->setData(translationTable[attributeIndex], newData);
-      } // else { cout << "Invalides Attribut gefunden [" << attributeIndex<<";"<<translationTable[attributeIndex]<<"] "<<endl; }
-      attributeIndex++;
+      if( _featList[attrCount] != "class"){
+	newData = tokens[attrCount].toFloat();
+	instance->setData(attrCount, newData);
+      } else {
+	int instanceClass = _class2index[tokens[attrCount]];
+	if (instanceClass != currentClass){ // have to start a new feature container sequence
+	  if (currentSequence){
+	    _data->addData(currentClass, currentSequence);
+	  }
+	  currentSequence = new FeatureContainerSequence();
+	  currentClass = instanceClass;
+	}
+      }
     }
     
-    data->append(instance);
+    currentSequence->append(instance);
   }
+
+  _data->addData(currentClass, currentSequence);
 	
   arffFile.close();
   
-  return data;
-
+  return _valid;
 }
 
-// CHARMinputmodules::ARFFFileHandler::ARFFFileHandler()
-// {
-// }
+bool ArffFileHandling::ARFFFileHandler::save(string filename) const
+{
+  fstream outfile(filename.c_str(), fstream::out);
 
-// CHARMinputmodules::ARFFFileHandler::~ARFFFileHandler()
-// {
-// }
+  // write header
+  printHeader(outfile, filename);
 
-// void CHARMinputmodules::ARFFFileHandler::printLongARFFHeader(fstream s, bg::string filename, bg::string activityname, int numberOfInstances, InputFeatureList* features)
-// {
-//   // 1. Commentary above the true header of the ARFF file, provides additional information about the content of the file.
-//   s << "% 1.  Title:" << endl << "% " << filename.lastPathComponent().c_str() << endl << "%" << endl;
-//   s << "% 2.  Created by:" << endl << "% CHARM Offline Trainer" << endl << "%" << endl;
-//   s << "% 3.  Creation date:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
-//   s << "% 4.  Creation time:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
-//   s << "% 5.  Number of Instances:" << endl << "% " << numberOfInstances << endl << "%" << endl;
-//   s << "% 6.  Number Of Attributes:" << endl << "% " << features->getNumber() << endl << "%" << endl;
-//   s << "% 7.  Attribute Information:" << endl << "%" << endl;
-//   s << "% 8.  Class Distribution" << endl;
-
-//   // 2. Declaration of attributes and other informations
-//   cout << "@relation " << filename.lastPathComponent().c_str() << "-" << activityname.c_str() << endl << endl;
-//   for (unsigned int f=0; f<features->getNumber(); f++){
-//     cout << "@attribute " << getFeatureName(static_cast<CHARMbase::FeatureNumber>(features->getFeature(f))).c_str() << "\tNUMERIC" << endl;
-//   }
-//   cout << "@attribute class\t{" << activityname.c_str() << "," << "Not}" << endl << endl << endl;
-
-//   cout << "@data" << endl;  
+  // prepare class names
+  bg::strlist classNames;
+  for (unsigned int i=0; i<_index2class.size(); i++){
+    classNames.push_back(_index2class.find(i)->second);
+  }
   
-//   return;
-// }
-
-// void CHARMinputmodules::ARFFFileHandler::printShortARFFHeader(fstream s, bg::string filename)
-// {
+  // write actual data
+  _data->print(outfile, &classNames);
   
-// }
-
-// FeatureContainerSequence* CHARMinputmodules::ARFFFileHandler::load(bg::string filename, InputFeatureList*& list) throw (FileError) {
-//   //Open given File
-//   ifstream arffFile;                          
-//   arffFile.open(filename.c_str(), ios_base::in);
+  outfile.close();
   
-//   //Successfully opened?
-//   if (!arffFile){    
-//     BGDBG (3, "Throwing exception FileError\n");
-//     throw FileError(__FILE__, __LINE__, filename, GenericFileError, "Open .arff file for loading feature sequence");
-//   }
+  return _valid;
+}
 
-//   list = new InputFeatureList();
-	
-//   /////////////////// Read attributes ///////////////////////////
-//   //Add attributes with FeatureNumber unequal to fnNoFeatureNumber, to InputFeatureList
-//   char buf[3072];	//TODO Improve: zeilenweises lesen umstellen auf blockweise
-//   bg::string attrName;
-//   int attributeCountAll = 0;
-//   while (arffFile.getline(buf, sizeof(buf))){
-//     //Check only lines starting with "@attribute"
-//     if(bg::string(buf).startsWith("@attribute")) {
-//       attributeCountAll++;
-//       //Check FeatureNumber
-//       bg::strlist tokens = bg::string(buf).split(" ");
-//       attrName = tokens[1];
-//       if(makeFeatureNumber(attrName) != fnNoFeatureNumber) {
-// 	list->addFeature(makeFeatureNumber(attrName));
-//       } else {
-//       }
-//     } else if(bg::string(buf).startsWith("@data")) {
-//       //Break if entering the data part
-//       break;
-//     }
-//   }
-  
-//   // Reset get pointer position to stream beginning
-//   arffFile.seekg( 0, ios_base::beg );
-  
-	
-//   /////////////////// Build translation table ///////////////////
-//   //Build a translation table for AttributeIndex (in the ARFF-File)  => index in the InputeFeatureList
-//   int translationTable[attributeCountAll];
-//   int attributeIndex = 0;	//index in the ARFF-File
-//   while (arffFile.getline(buf, sizeof(buf))){
-//     //Check only lines starting with "@attribute"
-//     if(bg::string(buf).startsWith("@attribute")) {
-//       bg::strlist tokens = bg::string(buf).split(" ");
-//       attrName = tokens[1].c_str();
-//       translationTable[attributeIndex] = list->findFeature(makeFeatureNumber(attrName));
-//       attributeIndex++;
-//     } else if(bg::string(buf).startsWith("@data")) {
-//       //Break if entering the data part
-//       break;
-//     }
-//   }
-  
-// //   cout<<"Translation table:"<<endl;
-// //   for(int i = 0; i < attributeCountAll; i++){
-// //     cout << "[" << i << "]=" << translationTable[i] << " , ";
-// //     if(i%20 == 0){ cout<<endl; }
-// //   }
-// //   cout<<endl;
-	
-	
-	
-//   /////////////////// Read data /////////////////////////////////
-//   //Reading data part line by line 
-//   FeatureContainerSequence* data = new FeatureContainerSequence();
-//   FeatureContainer* instance;
-//   FLOAT_T newData;	//stores one attribute in one line
-//   int instanceCounter=0;
-//   int listLen = list->getNumber();
-//   while (arffFile.getline(buf, sizeof(buf))){
-//     //ignore comments, and if no "," is in the line, ignore it
-//     if(((bg::string(buf))[0] == '%') || ((bg::string(buf))[0] == '\n') || (bg::string(buf).find(",") == bg::string::npos) ){
-//       continue;
-//     }
+ArffFileHandling::TrainingsDataContainer* ArffFileHandling::ARFFFileHandler::getData() const
+{
+  return _data;
+}
 
-//     //One instance per line
-//     instance = new FeatureContainer(listLen);
-//     attributeIndex = 0;	//index of the attributes in the current line/instance
-//     instanceCounter++;
+int ArffFileHandling::ARFFFileHandler::getNumberOfFeatures() const
+{
+  return _featList.size();
+}
 
-//     //Split the line at the seperators
-//     bg::strlist tokens = bg::string(buf).split(",");
-//     for (unsigned int i=0; i<tokens.size(); i++){
-//       //save only attributes which are in the InputFeatureList (which means they translate to unequal -1)
-//       if(translationTable[attributeIndex] != -1){
-// 	newData = tokens[i].toFloat();
-// 	instance->setData(translationTable[attributeIndex], newData);
-//       } // else { cout << "Invalides Attribut gefunden [" << attributeIndex<<";"<<translationTable[attributeIndex]<<"] "<<endl; }
-//       attributeIndex++;
-//     }
-    
-//     data->append(instance);
-//   }
-	
-//   arffFile.close();
-  
-//   return data;
-// }
-
-// bool CHARMinputmodules::ARFFFileHandler::save(FeatureContainerSequence* sequence, bg::string filename)
-// {
-//   return writeSequence(sequence, filename, false);
-// }
 
 // bool CHARMinputmodules::ARFFFileHandler::append(FeatureContainerSequence* sequence, bg::string filename) throw (FalseRequestError)
 // {

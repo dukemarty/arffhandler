@@ -27,7 +27,7 @@ system_libraries = ['gcc', 'System', 'stdc++', 'SystemStubs']
 
 
 
-external_libraries = ['boost_program_options-mt']
+external_libraries = ['bgcpp', 'boost_program_options-mt']
 project_libraries = []
 
 
