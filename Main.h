@@ -6,7 +6,7 @@
     Please put your documentation for this file here.
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 26.11.09
+    Date of last change: 29.11.09
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-26
@@ -29,12 +29,21 @@
 namespace bpo = boost::program_options;
 using namespace std;
 
+typedef enum {
+  INVALID,
+  COPY,
+  SHOW
+} OperationMode;
 
+//! global operation mode
+static OperationMode g_mode;
 //! global name of input file
 static std::string g_inputfilename;
 //! global name of output file
 static std::string g_outputfilename;
 
+
+OperationMode parseOperationMode(string mode);
 
 /*!
   \brief Print usage of the stand-alone activity recognizer to standard out.
@@ -43,6 +52,12 @@ static std::string g_outputfilename;
   @param options object containing the allowed options together with their description
 */
 void printUsageHint(string progname, bpo::options_description& options);
+
+int performCopy();
+int performShow();
+
+int processCopyParameters(bpo::variables_map& vm);
+int processShowParameters(bpo::variables_map& vm);
 
 /*!
   \brief Process command line parameters and make settings accordingly.
