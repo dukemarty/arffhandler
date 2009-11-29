@@ -15,7 +15,7 @@
 import os, glob
 
 env = Environment(ENV = os.environ)
-docbuilder = Builder(action = 'doxygen')
+docbuilder = Builder(action = 'doxygen DoxyUser ; doxygen DoxyDevel')
 env.Append(BUILDERS = {'DoxygenDoc' : docbuilder})
 
 bgtoolspath = '/org/opt/bgtools'
@@ -75,7 +75,7 @@ arffmanager = Program('ARFFManager', program_input_files,
                                      LINKFLAGS = project_ld_flags)
 
 
-env.DoxygenDoc('docu', 'Doxyfile')
+env.DoxygenDoc('docu', ['DoxyUser', 'DoxyDevel'])
 
 Clean(arffmanager, glob.glob('*~'))
 

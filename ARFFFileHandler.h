@@ -67,9 +67,20 @@ namespace ArffFileHandling {
   protected:
     
   public:
+    //@{
+    //! \name Constructors & Destructor
+    /*!
+      \brief Initialize an empty file handler.
+    */
     ARFFFileHandler();
+    /*!
+      \brief Initialize file handler directly with an arff file.
+
+      @param filename name of an arff file which is loaded directly
+    */
     ARFFFileHandler(string filename);
     ~ARFFFileHandler();
+    //@}
     
     /*!
       \brief Load data from an arff file.

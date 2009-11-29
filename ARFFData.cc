@@ -36,6 +36,20 @@ bool ArffFileHandling::ARFFData::isValid() const
   return _valid;
 }
 
+void ArffFileHandling::ARFFData::clear()
+{
+  _featList.clear();
+  _class2index.clear();
+  _index2class.clear();
+
+  delete _data;
+  _data = NULL;
+
+  _valid = false;
+
+  assert (_valid == false);
+}
+
 unsigned int ArffFileHandling::ARFFData::getNumberOfFeatures() const
 {
   return _featList.size();
@@ -79,6 +93,8 @@ ArffFileHandling::TrainingsDataContainer* ArffFileHandling::ARFFData::getData() 
 
 int ArffFileHandling::ARFFData::getNumberOfInstances() const
 {
+  assert (_valid==true);
+  
   return _data->getTotalNumberOfContainers();
 }
 
@@ -90,15 +106,21 @@ void ArffFileHandling::ARFFData::initData()
 
   _data = new TrainingsDataContainer(getNumberOfClasses());
   _valid = true;
+
+  assert (_valid==true);
 }
 
 void ArffFileHandling::ARFFData::addDataSequence(unsigned int classindex, FeatureContainerSequence* data)
 {
+  assert (_valid==true);
+  
   _data->addData(classindex, data);
 }
 
 void ArffFileHandling::ARFFData::printData(ostream& outstream) const
 {
+  assert (_valid==true);
+  
   // prepare class names
   bg::strlist classNames;
   for (unsigned int i=0; i<getNumberOfClasses(); i++){
@@ -108,19 +130,6 @@ void ArffFileHandling::ARFFData::printData(ostream& outstream) const
   _data->print(outstream, &classNames);
 }
 
-void ArffFileHandling::ARFFData::clear()
-{
-  _featList.clear();
-  _class2index.clear();
-  _index2class.clear();
-
-  delete _data;
-  _data = NULL;
-
-  _valid = false;
-
-  assert (_valid == false);
-}
 
 #if ARFFData_test
 #include <stdio.h>
