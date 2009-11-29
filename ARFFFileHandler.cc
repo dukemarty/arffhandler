@@ -29,46 +29,28 @@
 
 ArffFileHandling::ARFFFileHandler::ARFFFileHandler()
 {
-  _valid = false;
   _filename = "";
-  _data = NULL;
 }
 
 ArffFileHandling::ARFFFileHandler::ARFFFileHandler(string filename)
 {
   _filename = filename;
-  _valid = true;
-  _data = NULL;
 
   try {
     load(filename);
   } catch (ios_base::failure& e){
     _filename = "";
-    _featList.clear();
-    _valid = false;
-    
-    delete _data;
-    _data = NULL;
+    _arffcontent.clear();
   }
 }
 
 ArffFileHandling::ARFFFileHandler::~ARFFFileHandler()
 {
-  delete _data;
 }
 
 void ArffFileHandling::ARFFFileHandler::clearData()
 {
-  delete _data;
-  _data = NULL;
-
-  _featList.clear();
-  _class2index.clear();
-  _index2class.clear();
-
-  _valid = false;
-  
-  assert (_valid == false);
+  _arffcontent.clear();
 }
 
 void ArffFileHandling::ARFFFileHandler::printHeader(fstream& out, string filename) const
@@ -78,24 +60,24 @@ void ArffFileHandling::ARFFFileHandler::printHeader(fstream& out, string filenam
   out << "% 2.  Created by:" << endl << "% ARFF Handler Library" << endl << "%" << endl;
   out << "% 3.  Creation date:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
   out << "% 4.  Creation time:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
-  out << "% 5.  Number of Instances:" << endl << "% " << _data->getTotalNumberOfContainers() << endl << "%" << endl;
-  out << "% 6.  Number Of Attributes:" << endl << "% " << getNumberOfFeatures() << endl << "%" << endl;
+  out << "% 5.  Number of Instances:" << endl << "% " << _arffcontent.getNumberOfInstances() << endl << "%" << endl;
+  out << "% 6.  Number Of Attributes:" << endl << "% " << _arffcontent.getNumberOfFeatures() << endl << "%" << endl;
   out << "% 7.  Attribute Information:" << endl << "%" << endl;
   out << "% 8.  Class Distribution" << endl << endl;
 
-  out << "@relation '" << filename.c_str() << "-" << _class2index.size() << "-classes'" << endl << endl;
+  out << "@relation '" << filename.c_str() << "-" << _arffcontent.getNumberOfClasses() << "-classes'" << endl << endl;
 	
   // write attributes
-  for(unsigned int f=1; f<_featList.size(); f++){
-    if (_featList.find(f)->second == "class"){
+  for(unsigned int f=1; f<_arffcontent.getNumberOfFeatures(); f++){
+    if (_arffcontent.getFeatureName(f) == "class"){
       out << "@attribute class {";
-      out << _index2class.find(0)->second;
-      for (unsigned int c=1; c<_index2class.size(); c++){
-	out << "," << _index2class.find(c)->second;
+      out << _arffcontent.getClassName(0);
+      for (unsigned int c=1; c<_arffcontent.getNumberOfClasses(); c++){
+	out << "," << _arffcontent.getClassName(c);
       }
       out << "}" << endl << endl;
     } else {
-      out << "@attribute " << _featList.find(f)->second << " numeric" << endl;
+      out << "@attribute " << _arffcontent.getFeatureName(f) << " numeric" << endl;
     }
   }
   out << endl;
@@ -135,8 +117,7 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
 	bg::string values = classline.substr(openPos + 1, closePos - openPos - 1);
 	bg::strlist classValTokens = values.split(",");
 	for (unsigned int i=0; i<classValTokens.size(); i++){
-	  _class2index[classValTokens[i]] = i;
-	  _index2class[i] = classValTokens[i];
+	  _arffcontent.addClass(i, classValTokens[i]);
 	}
       } else {
 	if (tokens[2] != "numeric"){
@@ -144,7 +125,7 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
 	  throw domain_error("Attribute is not numeric");
 	}
       }
-      _featList[attributeCountAll] = attrName;
+      _arffcontent.addFeature(attributeCountAll, attrName);
       attributeCountAll++;
     } else if(bg::string(buf).startsWith("@data")) {
       //Break if entering the data part
@@ -153,15 +134,13 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
   }
 
   /////////////////// Read data /////////////////////////////////
-  _data = new TrainingsDataContainer(_class2index.size());
-
-  _valid = true;
+  _arffcontent.initData();
 
   //Reading data part line by line 
   FeatureContainerSequence* currentSequence=NULL;
   FeatureContainer* instance;
   double newData;	//stores one attribute in one line
-  int currentClass=_class2index.size();
+  int currentClass=_arffcontent.getNumberOfClasses();
   
   while (arffFile.getline(buf, sizeof(buf))){
     //ignore comments, and if no "," is in the line, ignore it
@@ -170,21 +149,20 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     }
 
     //One instance per line
-    instance = new FeatureContainer(getNumberOfFeatures());
+    instance = new FeatureContainer(_arffcontent.getNumberOfFeatures());
 
     
     //Split the line at the separators
     bg::strlist tokens = bg::string(buf).split(",");
     for (unsigned int attrCount=0; attrCount<tokens.size(); attrCount++){
-      //save only attributes which are in the InputFeatureList (which means they translate to unequal -1)
-      if( _featList[attrCount] != "class"){
+      if( _arffcontent.getFeatureName(attrCount) != "class"){
 	newData = tokens[attrCount].toFloat();
 	instance->setData(attrCount, newData);
       } else {
-	int instanceClass = _class2index[tokens[attrCount]];
+	int instanceClass = _arffcontent.getClassIndex(tokens[attrCount]);
 	if (instanceClass != currentClass){ // have to start a new feature container sequence
 	  if (currentSequence){
-	    _data->addData(currentClass, currentSequence);
+	    _arffcontent.addDataSequence(currentClass, currentSequence);
 	  }
 	  currentSequence = new FeatureContainerSequence();
 	  currentClass = instanceClass;
@@ -195,11 +173,11 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     currentSequence->append(instance);
   }
 
-  _data->addData(currentClass, currentSequence);
+  _arffcontent.addDataSequence(currentClass, currentSequence);
 	
   arffFile.close();
   
-  return _valid;
+  return _arffcontent.isValid();
 }
 
 bool ArffFileHandling::ARFFFileHandler::save(string filename) const
@@ -209,28 +187,17 @@ bool ArffFileHandling::ARFFFileHandler::save(string filename) const
   // write header
   printHeader(outfile, filename);
 
-  // prepare class names
-  bg::strlist classNames;
-  for (unsigned int i=0; i<_index2class.size(); i++){
-    classNames.push_back(_index2class.find(i)->second);
-  }
-  
   // write actual data
-  _data->print(outfile, &classNames);
+  _arffcontent.printData(outfile);
   
   outfile.close();
   
-  return _valid;
+  return _arffcontent.isValid();
 }
 
-ArffFileHandling::TrainingsDataContainer* ArffFileHandling::ARFFFileHandler::getData() const
+ArffFileHandling::ARFFData* ArffFileHandling::ARFFFileHandler::getData()
 {
-  return _data;
-}
-
-int ArffFileHandling::ARFFFileHandler::getNumberOfFeatures() const
-{
-  return _featList.size();
+  return &_arffcontent;
 }
 
 

@@ -31,31 +31,23 @@
 
 /* my includes */
 #include "Containers.h"
+#include "ARFFData.h"
 
 using namespace std;
 
 
 namespace ArffFileHandling {
 
-  typedef map<int, string> FeatureList;
-  typedef map<int, string> ClassValuesByIndex;
-  typedef map<string, int> ClassValuesByName;
-  
   /*!
     \class ARFFFileHandler
     \brief Gives functionality to load and save ARFF files.
     
-    Uses CHARMbase::FeatureContainerSequence to handle the data.
   */
   class ARFFFileHandler {
   private:
-    bool _valid;
-    string _filename;
-    FeatureList _featList;
+    ARFFData _arffcontent;
 
-    TrainingsDataContainer* _data;
-    ClassValuesByName _class2index;
-    ClassValuesByIndex _index2class;
+    string _filename;
 
     void clearData();
 
@@ -72,9 +64,7 @@ namespace ArffFileHandling {
     bool load(string filename);
     bool save(string filename) const;
 
-    TrainingsDataContainer* getData() const;
-    int getNumberOfFeatures() const;
-    
+    ARFFData* getData();
   };
 
 };

@@ -1,7 +1,7 @@
 # -*- python -*- coding: latin1
 #
 # Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-# Date of last change: 26.11.09
+# Date of last change: 29.11.09
 #
 # Author: Martin Loesch (loesch@@ira.uka.de)
 # Date: 2009-11-26
@@ -34,7 +34,7 @@ project_libraries = []
 subproject_scripts = []
 subproject_paths = []
 
-lib_input_files = ['Containers.cc', 'ARFFFileHandler.cc']
+lib_input_files = ['Containers.cc', 'ARFFData.cc', 'ARFFFileHandler.cc']
 program_input_files = ['Main.cc']
 
 

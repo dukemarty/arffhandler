@@ -81,8 +81,8 @@ int performShow()
 
   std::cerr<< "** Successfully loaded file :  " << g_inputfilename << std::endl;
   
-  ArffFileHandling::TrainingsDataContainer* readData = handler.getData();
-  readData->print(std::cout);
+  ArffFileHandling::ARFFData* readData = handler.getData();
+  readData->printData(std::cout);
 
   std::cerr << "** Printed loaded data to standard output" << std::endl;
 
