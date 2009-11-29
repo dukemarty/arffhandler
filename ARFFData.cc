@@ -80,7 +80,7 @@ string ArffFileHandling::ARFFData::getClassName(unsigned int index) const
   return res;
 }
 
-unsigned int ArffFileHandling::ARFFData::getClassIndex(string name) const
+int ArffFileHandling::ARFFData::getClassIndex(string name) const
 {
   int res=-1;
   ClassValuesByName::const_iterator it = _class2index.find(name);

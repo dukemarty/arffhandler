@@ -20,8 +20,7 @@
 
 /* my includes */
 #include "Main.h"
-#include "Containers.h"
-#include "ARFFFileHandler.h"
+#include "arffhandlerlib.h"
 
 
 //@{
