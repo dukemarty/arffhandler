@@ -72,12 +72,22 @@ unsigned int ArffFileHandling::ARFFData::getNumberOfClasses() const
 
 string ArffFileHandling::ARFFData::getClassName(unsigned int index) const
 {
-  return _index2class.find(index)->second;
+  string res="";
+  ClassValuesByIndex::const_iterator it = _index2class.find(index);
+
+  if (it!=_index2class.end()){ res = it->second; }
+  
+  return res;
 }
 
 unsigned int ArffFileHandling::ARFFData::getClassIndex(string name) const
 {
-  return _class2index.find(name)->second;
+  int res=-1;
+  ClassValuesByName::const_iterator it = _class2index.find(name);
+
+  if (it!=_class2index.end()){ res = it->second; }
+  
+  return res;
 }
 
 void ArffFileHandling::ARFFData::addClass(unsigned int index, string name)

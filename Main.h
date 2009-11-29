@@ -79,8 +79,23 @@ int performCopy();
 */
 int performShow();
 
+/*!
+  \brief Parse parameters for a copy operation.
 
+  The parameters which are necessary for a copy are a load and at least one save parameter.
+  
+  @param vm structure containing all parameters
+  @return 0 if parsing was successful, 1 if parameters were missing
+*/
 int processCopyParameters(bpo::variables_map& vm);
+/*!
+  \brief Parse parameters for a show operation.
+
+  The parameter which is necessary for the show is at least one load parameter.
+  
+  @param vm structure containing all parameters
+  @return 0 if parsing was successful, 1 if parameters were missing
+*/
 int processShowParameters(bpo::variables_map& vm);
 
 /*!

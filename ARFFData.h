@@ -52,12 +52,12 @@ namespace ArffFileHandling {
     //! flag for the validity of the object, basically: is a data container initialized
     bool _valid;
 
-    //! 
+    //! number list of all features of the instances 
     FeatureList _featList;
 
-    //!
+    //! mapping of all classes to their position in the ordered list of classes
     ClassValuesByName _class2index;
-    //!
+    //! mapping of all valid class indizes to their name
     ClassValuesByIndex _index2class;
 
     //! pointer to the actual data (instances)
@@ -68,6 +68,11 @@ namespace ArffFileHandling {
   public:
     //@{
     //! \name Constructors & Destructor
+    /*!
+      \brief Initialize an empty (non-valid) ARFF data object.
+
+      @pre isValid()==false
+    */
     ARFFData();
     ~ARFFData();
     //@}
@@ -90,56 +95,96 @@ namespace ArffFileHandling {
 
     //@{
     //! \name Handling feature information
+    /*!
+      \brief Get number of features in the arff file.
+
+      @return number of features.
+    */
     unsigned int getNumberOfFeatures() const;
+    /*!
+      \brief Get name of a feature.
+
+      @param index number of the feature whose name is queried
+      @return name of the feature
+    */
     string getFeatureName(unsigned int index) const;
+    /*!
+      \brief Add a feature to the arff data.
+
+      \attention If a feature with the same number already exists, it is overwritten!
+      
+      @param index number of the new feature
+      @param name name of the new feature
+    */
     void addFeature(unsigned int index, string name);
     //@}
 
     //@{
     //! \name Handling class information
+    /*!
+      \brief Get the number of classes
+
+      @return number of classes
+    */
     unsigned int getNumberOfClasses() const;
+    /*!
+      \brief Get the name of a class in the data.
+
+      @param index number of the class (according to the order)
+      @return name of the class, "" if the class (index) does not exist
+    */
     string getClassName(unsigned int index) const;
-    unsigned int getClassIndex(string name) const;
+    /*!
+      \brief Get the number of a class in the data.
+
+      @param name name of the class
+      @return index of the class, -1 if the class (name) does not exist
+    */
+    int getClassIndex(string name) const;
     void addClass(unsigned int index, string name);
     //@}
 
     //@{
     //! \name Handling instance data
     /*!
-      \brief
+      \brief Get a pointer to the instance data.
 
-      @return
+      @return pointer to the internal TrainingDataContainer object, NULL if isValid()==false holds
     */
     TrainingsDataContainer* getData() const;
     /*!
-      /brief
+      \brief Get the complete number of instances, summarized over all classes.
 
       @pre isValid()==true
       
-      @return
+      @return number of all instances in the data set
     */
     int getNumberOfInstances() const;
     /*!
-      \brief
+      \brief Initialize data container.
 
+      \attention For this method to be used correctly, the number of classes must be known, i.e. all classes must have been added via the addClass() method.
+      
       @post isValid()==true
     */
     void initData();
     /*!
-      \brief
+      \brief Add data sequence to the instance data set.
 
+      \attention The ownership of the data sequence (i.e. memory management) is taken over!
+      
       @pre isValid()==true
 
-      @param classindex
-      @param data
+      @param classindex number of class for which an instance sequence is added
+      @param data point to data sequence
     */
     void addDataSequence(unsigned int classindex, FeatureContainerSequence* data);
     /*!
-      \brief
+      \brief Print content of the instance data to an output stream
 
       @pre isValid()==true
 
-      @param outstream
+      @param outstream stream to which the data ist printed
     */
     void printData(ostream& outstream) const;
     //@}

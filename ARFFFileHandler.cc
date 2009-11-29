@@ -53,7 +53,7 @@ void ArffFileHandling::ARFFFileHandler::clearData()
   _arffcontent.clear();
 }
 
-void ArffFileHandling::ARFFFileHandler::printHeader(fstream& out, string filename) const
+void ArffFileHandling::ARFFFileHandler::printHeader(ostream& out, string filename) const
 {
   // write meta header
   out << "% 1.  Title:" << endl << "% " << filename.c_str() << endl << "%" << endl;
@@ -182,7 +182,7 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
 
 bool ArffFileHandling::ARFFFileHandler::save(string filename) const
 {
-  fstream outfile(filename.c_str(), fstream::out);
+  ofstream outfile(filename.c_str(), fstream::out);
 
   // write header
   printHeader(outfile, filename);

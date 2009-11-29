@@ -24,6 +24,8 @@
 #include "ARFFFileHandler.h"
 
 
+//@{
+//! \name Constants for parameter names
 const char c_CommandOption[] = "command";
 const char c_CommandOptionShort[] = "command,c";
 
@@ -35,6 +37,7 @@ const char c_LoadOptionShort[] = "load,l";
 
 const char c_SaveOption[] = "save";
 const char c_SaveOptionShort[] = "save,s";
+//@}
 
 
 OperationMode parseOperationMode(string mode)
@@ -169,6 +172,7 @@ void processCommandlineParameters(int argc, char **argv)
   }
 }
 
+//! \cond false
 int main(int argc, char **argv)
 {
   processCommandlineParameters(argc, argv);
@@ -187,5 +191,5 @@ int main(int argc, char **argv)
   
   return res;
 }
-
+//! \endcond
 

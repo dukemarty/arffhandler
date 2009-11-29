@@ -62,7 +62,7 @@ namespace ArffFileHandling {
       @param out stream to which is written
       @param filename name of the read file (used in the header text)
     */
-    void printHeader(fstream& out, string filename) const;
+    void printHeader(ostream& out, string filename) const;
     
   protected:
     
