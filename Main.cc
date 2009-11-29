@@ -42,10 +42,8 @@ OperationMode parseOperationMode(string mode)
   OperationMode res=INVALID;
   
   if ( mode=="copy" || mode=="cp"){
-//     cerr << "Identified COPY command mode." << endl;
     res = COPY; }
   else if ( mode=="show" || mode=="sh"){
-//     cerr << "Identified SHOW command mode." << endl;
     res = SHOW; }
   else { res = INVALID; }
 
@@ -66,17 +64,11 @@ void printUsageHint(string progname, bpo::options_description& options)
 int performCopy()
 {
   ArffFileHandling::ARFFFileHandler handler;
-  handler.load(g_inputfilename);
 
+  handler.load(g_inputfilename);
   std::cerr<< "** Successfully loaded file :  " << g_inputfilename << std::endl;
   
-  ArffFileHandling::TrainingsDataContainer* readData = handler.getData();
-  readData->print(std::cout);
-
-  std::cerr << "** Printed loaded data to standard output" << std::endl;
-  
   int res = handler.save(g_outputfilename);
-
   std::cerr << "** Successfully stored data to a file :  " << g_outputfilename << std::endl;
 
   return res;

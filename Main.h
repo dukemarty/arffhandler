@@ -29,11 +29,14 @@
 namespace bpo = boost::program_options;
 using namespace std;
 
+
+//! enum for valid operation modes 
 typedef enum {
   INVALID,
   COPY,
   SHOW
 } OperationMode;
+
 
 //! global operation mode
 static OperationMode g_mode;
@@ -43,6 +46,12 @@ static std::string g_inputfilename;
 static std::string g_outputfilename;
 
 
+/*!
+  \brief Parse operation mode from a string (= command line parameter).
+
+  @param mode mode as a string
+  @return related enum to the input parameter
+*/
 OperationMode parseOperationMode(string mode);
 
 /*!
@@ -53,8 +62,23 @@ OperationMode parseOperationMode(string mode);
 */
 void printUsageHint(string progname, bpo::options_description& options);
 
+/*!
+  \brief Perform a copy operation.
+
+  \pre The parameters \em load and \em save must be given. The loaded file is written to the save file.
+
+  @return 0 if everything went right, 1 else
+*/
 int performCopy();
+/*!
+  \brief Perform a show operation.
+
+  \pre The \em load parameter must be given. The loaded files data is written to the standard output.
+
+  @return 0 if everything went right, 1 else
+*/
 int performShow();
+
 
 int processCopyParameters(bpo::variables_map& vm);
 int processShowParameters(bpo::variables_map& vm);

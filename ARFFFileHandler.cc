@@ -6,7 +6,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 27.11.09
+    Date of last change: 29.11.09
 
     Revision: 0.1
 
@@ -25,7 +25,6 @@
 
 /* my includes */
 #include "ARFFFileHandler.h"
-// #include "Enums.h"
 
 
 ArffFileHandling::ARFFFileHandler::ARFFFileHandler()
@@ -235,58 +234,6 @@ int ArffFileHandling::ARFFFileHandler::getNumberOfFeatures() const
 }
 
 
-// bool CHARMinputmodules::ARFFFileHandler::append(FeatureContainerSequence* sequence, bg::string filename) throw (FalseRequestError)
-// {
-//   return writeSequence(sequence, filename, true);
-// }
-
-// bool CHARMinputmodules::ARFFFileHandler::append(FeatureContainer* dataPoint, bg::string filename) throw (FalseRequestError)
-// {
-//   FeatureContainerSequence* fcs = new FeatureContainerSequence();
-//   fcs->append(dataPoint);
-
-//   return ARFFFileHandler::append(fcs, filename);
-// }
-
-// bool CHARMinputmodules::ARFFFileHandler::writeSequence(FeatureContainerSequence* sq, bg::string filename, bool append, InputFeatureList* features)
-// {
-//   //open given file as a filestream in given mode
-//   fstream f(filename.c_str(), (append ? fstream::out|fstream::app : fstream::out));
-	
-//   //Write header only if not appending
-//   if(!append) {
-//     //Write @relation
-//     f << "@relation 'Written by ARRFFileHandler'" << endl << endl;
-	
-//     //Write attributes
-//     FeatureContainer* firstFC = sq->getContainer(0);
-//     for(int i=1; i <= firstFC->getNumberOfFeatures(); ++i){
-//       f << "@attribute " << getFeatureName(static_cast<FeatureNumber>(i)) << " numeric" << endl;
-//     }
-//     f << endl;
-    
-//     //Write datapart
-//     f << "@data" << endl;
-//   }
-  
-//   //Write Ddata from the given sequence
-//   FeatureContainer* curFC;
-//   for(int i=0; i<sq->getSeqLength(); ++i){
-//     curFC = sq->getContainer(i);
-//     //Append each value separated by , (except the last one)
-//     for(int j=0; j<curFC->getNumberOfFeatures() - 1; ++j){
-//       f << curFC->getData(j) << ",";
-//     }
-//     //no comma after last value, but start a new line
-//     f << curFC->getData(curFC->getNumberOfFeatures() - 1) << endl;
-//   }
-	
-//   //finished
-// //   return f.close();
-// //   return f.good();
-//   return true;
-// }
-
 
 #if ARFFFileHandler_test
 
@@ -303,35 +250,6 @@ int main(int argc, char **argv)
 
   fprintf(stderr, "Testing ARFFFileHandler\n");
 
-  cerr << "Test ARFFload: " << endl;
-
-  bg::string path="/Users/martinloesch/Source/projects/ActivityRecognition/NoveltyDetector/TestDaten/";
-bg::string file = path + "2D-Testdata1a.arff";
-//	"readbook_selected_truncated.arff";
-//	"readbook_complete_truncated10.arff";
-	
-  InputFeatureList* ifList = new InputFeatureList();
-  FeatureContainerSequence* sq=NULL;
-
-  try {
-    sq = CHARMinputmodules::ARFFFileHandler::load(file, ifList);
-  } catch (CHARMerrors::FileError& e){
-    cerr << "Catched the following error: " << endl;
-    cerr << "   " << e.toString().c_str() << endl;
-  }
-  
-  if(sq==NULL){
-    cerr<<"Gelesene Sequenz ist NULL"<<endl;
-    return false;
-  }
-  
-  FeatureContainer* firstline=sq->getContainer(0);
-  cerr << "FeatureContainer firstline=" << firstline << endl;
-  for (unsigned int i=0; i<firstline->getNumberOfFeatures(); i++){
-    cerr << "   " << (*firstline)[i];
-  }
-  cerr << endl;
-  
   return 0;
 }
 #endif /* ARFFFileHandler_test */
