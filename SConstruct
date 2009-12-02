@@ -1,7 +1,7 @@
 # -*- python -*- coding: latin1
 #
 # Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-# Date of last change: 29.11.09
+# Date of last change: 02.12.09
 #
 # Author: Martin Loesch (loesch@@ira.uka.de)
 # Date: 2009-11-26
@@ -23,7 +23,7 @@ bgtoolspath = '/org/opt/bgtools'
 project_cc_flags = '-Wall -Wno-non-virtual-dtor -Wno-reorder -fno-common'
 project_ld_flags = ''
 
-system_libraries = ['gcc', 'System', 'stdc++', 'SystemStubs']
+system_libraries = [] # 'gcc', 'System', 'stdc++', 'SystemStubs']
 
 
 
