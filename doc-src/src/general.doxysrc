@@ -1,0 +1,17 @@
+/*! \if exist general.doxysrc This is -*- C++ -*- \endif
+  \mainpage ARFFHandler
+
+  \image html arffhl-logo.png
+  \image latex arffhl-logo.pdf "" width=10cm
+  
+  \section contents Overview      
+
+  The following image shows a rough overview on the links between the different modules of the system.
+  
+  \image html systemoverview.png "Overview on components and their interconnection"
+  \image latex systemoverview.pdf "Overview on components and their interconnection" width=10cm
+
+  The idea behind is the following:
+
+  \todo Will be filled in soon... :-)
+*/	   
