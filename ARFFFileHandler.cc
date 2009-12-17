@@ -6,7 +6,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 29.11.09
+    Date of last change: 17.12.09
 
     Revision: 0.1
 
@@ -107,7 +107,15 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     //Check only lines starting with "@attribute"
     if(bg::string(buf).startsWith("@attribute")) {
       //Check FeatureNumber
-      bg::strlist tokens = bg::string(buf).split(" ");
+      bg::strlist tokensAfterSpaceSplit = bg::string(buf).split(" ");
+      bg::strlist tokens;
+      for (bg::strlist::iterator itSpace=tokensAfterSpaceSplit.begin(); itSpace!=tokensAfterSpaceSplit.end(); itSpace++){
+	bg::strlist tokensAfterTabSplit = itSpace->split("\t");
+	for (bg::strlist::iterator itTab=tokensAfterTabSplit.begin(); itTab!=tokensAfterTabSplit.end(); itTab++){
+	  tokens.push_back(*itTab);
+	}
+      }
+      
       attrName = tokens[1];
       if (attrName == "class"){
 	string classline(buf);
