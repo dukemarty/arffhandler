@@ -74,7 +74,7 @@ void ArffFileHandling::ARFFFileHandler::printHeader(ostream& out, string filenam
   out << "@relation '" << filename.c_str() << "-" << _arffcontent.getNumberOfClasses() << "-classes'" << endl << endl;
 	
   // write attributes
-  for(unsigned int f=1; f<_arffcontent.getNumberOfFeatures(); f++){
+  for(unsigned int f=0; f<_arffcontent.getNumberOfFeatures(); f++){
     if (_arffcontent.getFeatureName(f) == "class"){
       out << "@attribute class {";
       out << _arffcontent.getClassName(0);
@@ -112,21 +112,23 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
   while (arffFile.getline(buf, sizeof(buf))){
     string bufString(buf);
     //Check only lines starting with "@attribute"
-    if (ba::starts_with(bufString, "@attribute")) {
+    if (ba::starts_with(ba::to_lower_copy(bufString), "@attribute")) {
       //Check FeatureNumber
       vector<string> tokensAfterSpaceSplit;
       ba::split(tokensAfterSpaceSplit, bufString, ba::is_any_of(" "));
       vector<string> tokens;
       for (vector<string>::iterator itSpace=tokensAfterSpaceSplit.begin(); itSpace!=tokensAfterSpaceSplit.end(); itSpace++){
 	vector<string> tokensAfterTabSplit;
-	ba::split(tokensAfterTabSplit, *itSpace, ba::is_any_of("\t"));
+	ba::split(tokensAfterTabSplit, *itSpace, ba::is_any_of("\t "));
 	for (vector<string>::iterator itTab=tokensAfterTabSplit.begin(); itTab!=tokensAfterTabSplit.end(); itTab++){
-	  tokens.push_back(*itTab);
+	  if (*itTab != ""){
+	    tokens.push_back(*itTab);
+	  }
 	}
       }
-      
+
       attrName = tokens[1];
-      if (attrName == "class"){
+      if (ba::to_lower_copy(attrName) == "class"){
 	string classline(buf);
 	// parsing valid class values
 	int openPos = classline.find("{");
@@ -138,19 +140,22 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
 	  _arffcontent.addClass(i, classValTokens[i]);
 	}
       } else {
-	if (tokens[2] != "numeric"){
+	if ( (ba::to_lower_copy(tokens[2]) != "numeric") && (ba::to_lower_copy(tokens[2]) != "real") ){
 	  cerr << "Throwing exception domain_error\n";
-	  throw domain_error("Attribute is not numeric");
+	  throw domain_error("Attribute is not numeric, but : <" + tokens[2] + ">");
 	}
       }
       _arffcontent.addFeature(attributeCountAll, attrName);
       attributeCountAll++;
-    } else if (ba::starts_with(bufString, "@data")) {
+    } else if (ba::starts_with(ba::to_lower_copy(bufString), "@data")) {
       //Break if entering the data part
       break;
     }
   }
 
+
+
+  
   /////////////////// Read data /////////////////////////////////
   _arffcontent.initData();
 
@@ -168,7 +173,7 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     }
 
     //One instance per line
-    instance = new FeatureContainer(_arffcontent.getNumberOfFeatures());
+    instance = new FeatureContainer(_arffcontent.getNumberOfFeatures() - 1);
 
     
     //Split the line at the separators
@@ -176,7 +181,6 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     ba::split(tokens, bufString, ba::is_any_of(","));
     for (unsigned int attrCount=0; attrCount<tokens.size(); attrCount++){
       if( _arffcontent.getFeatureName(attrCount) != "class"){
-// 	newData = tokens[attrCount].toFloat();
 	istringstream iss(tokens[attrCount]);
 	iss >> newData;
 	instance->setData(attrCount, newData);

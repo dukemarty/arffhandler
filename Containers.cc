@@ -234,9 +234,9 @@ int ArffFileHandling::TrainingsDataContainer::getTotalNumberOfContainers() const
 
 void ArffFileHandling::TrainingsDataContainer::addData(const unsigned int activity, ArffFileHandling::FeatureContainerSequence* newData)
 {
-  assert ( (activity < _numberOfActivities) && newData!=NULL);
+  assert (activity < _numberOfActivities);
+  assert (newData!=NULL);
   
-  cerr << "Added data for activity " << activity << " with container at address " << newData << "\n";
   _data[activity].push_back(newData);
 }
 

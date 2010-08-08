@@ -87,7 +87,7 @@ int ArffFileHandling::ARFFData::getClassIndex(string name) const
   ClassValuesByName::const_iterator it = _class2index.find(name);
 
   if (it!=_class2index.end()){ res = it->second; }
-  
+
   return res;
 }
 
@@ -114,7 +114,7 @@ void ArffFileHandling::ARFFData::initData()
   delete _data;
   _data = NULL;
   _valid = false;
-
+  
   _data = new TrainingsDataContainer(getNumberOfClasses());
   _valid = true;
 
