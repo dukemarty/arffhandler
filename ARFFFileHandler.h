@@ -9,7 +9,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 29.11.09
+    Date of last change: 08.08.10
 
     Revision: 0.1
 
@@ -25,7 +25,7 @@
 #define ARFFFILEHANDLER_H
 
 /* system includes */
-#include <bgtools.h>
+#include <string>
 #include <iostream>
 #include <map>
 

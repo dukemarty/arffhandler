@@ -6,7 +6,7 @@
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
   \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-  \par Date of last change: 26.11.09
+  \par Date of last change: 08.08.10
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -21,7 +21,8 @@
 #define CONTAINERS_H
 
 /* system includes */
-#include <bgtools.h>
+#include <string>
+#include <vector>
 #include <iostream>
 
 /* my includes */
@@ -224,7 +225,7 @@ namespace ArffFileHandling {
       @param outstream stream the output shall be written to
       @param activityNames list of activity names
     */
-    void printDataWithActivities(ostream& outstream, bg::strlist* activityNames) const;
+    void printDataWithActivities(ostream& outstream, vector<string>* activityNames) const;
   
   protected:
 
@@ -254,7 +255,7 @@ namespace ArffFileHandling {
       @param outstream stream the output is written to
       @param activityNames list of activity names
     */
-    void print(ostream& outstream, bg::strlist* activityNames=NULL) const;
+    void print(ostream& outstream, vector<string>* activityNames=NULL) const;
   };
 
 }

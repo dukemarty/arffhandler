@@ -1,7 +1,7 @@
 # -*- python -*- coding: latin1
 #
 # Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-# Date of last change: 02.12.09
+# Date of last change: 08.08.10
 #
 # Author: Martin Loesch (loesch@@ira.uka.de)
 # Date: 2009-11-26
@@ -27,7 +27,7 @@ system_libraries = [] # 'gcc', 'System', 'stdc++', 'SystemStubs']
 
 
 
-external_libraries = ['bgcpp', 'boost_program_options-mt']
+external_libraries = ['boost_program_options-mt', 'boost_date_time-mt']
 project_libraries = []
 
 
@@ -38,13 +38,11 @@ lib_input_files = ['Containers.cc', 'ARFFData.cc', 'ARFFFileHandler.cc']
 program_input_files = ['Main.cc']
 
 
-external_include_paths = [bgtoolspath + '/bglibcpp',
-                          '/opt/local/include']
+external_include_paths = ['/opt/local/include']
 project_include_paths = ['.'] + subproject_paths
 
 
-external_library_paths = [bgtoolspath + '/bglibcpp',
-                          '/opt/local/lib']
+external_library_paths = ['/opt/local/lib']
 project_library_paths = ['.'] + subproject_paths
 
 

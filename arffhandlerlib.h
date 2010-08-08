@@ -6,7 +6,7 @@
     Please put your documentation for this file here.
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 29.11.09
+    Date of last change: 08.08.10
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -21,7 +21,7 @@
 #define ARFFHANDLERLIB_H
 
 /* system includes */
-#include <bgtools.h>
+/* (none) */
 
 /* my includes */
 /* (none) */

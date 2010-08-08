@@ -3,7 +3,7 @@
     \file  ARFFData.cc
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 29.11.09
+    \par Date of last change: 08.08.10
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -16,6 +16,7 @@
 
 /* system includes */
 #include <assert.h>
+#include <vector>
 
 /* my includes */
 #include "ARFFData.h"
@@ -132,7 +133,7 @@ void ArffFileHandling::ARFFData::printData(ostream& outstream) const
   assert (_valid==true);
   
   // prepare class names
-  bg::strlist classNames;
+  vector<string> classNames;
   for (unsigned int i=0; i<getNumberOfClasses(); i++){
     classNames.push_back(getClassName(i));
   }

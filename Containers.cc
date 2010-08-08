@@ -3,7 +3,7 @@
     \file  Containers.cc
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 26.11.09
+    \par Date of last change: 08.08.10
 
     \author    Martin Loesch (<loesch@ira.uka.de>)
     \date      08.02.07
@@ -43,7 +43,7 @@ ArffFileHandling::FeatureContainer::FeatureContainer(const int numberOfFeatures)
   try {
     m_data = new double[m_numberOfFeatures];
   } catch (std::bad_alloc& e){
-    BGDBG (0, "Error: Memory for new FeatureContainer object could not be allocated!\n");
+    cerr << "Error: Memory for new FeatureContainer object could not be allocated!\n";
     throw;
   }
 
@@ -57,7 +57,7 @@ ArffFileHandling::FeatureContainer::FeatureContainer(const ArffFileHandling::Fea
   try {
     m_data = new double[m_numberOfFeatures];
   } catch (std::bad_alloc& e){
-    BGDBG (0, "Error: Memory for new FeatureContainer object could not be allocated!\n");
+    cerr << "Error: Memory for new FeatureContainer object could not be allocated!\n";
     throw;
   }
 
@@ -92,7 +92,7 @@ void ArffFileHandling::FeatureContainer::setNumberOfFeatures(const unsigned int 
   try {
     m_data = new double[m_numberOfFeatures];
   } catch (std::bad_alloc& e){
-    BGDBG (0, "Error: Memory for new FeatureContainer object could not be allocated!\n");
+    cerr << "Error: Memory for new FeatureContainer object could not be allocated!\n";
     throw;
   }
 
@@ -130,7 +130,7 @@ ArffFileHandling::FeatureContainer& ArffFileHandling::FeatureContainer::operator
     try {
       m_data = new double[m_numberOfFeatures];
     } catch (std::bad_alloc& e){
-      BGDBG (0, "Error: Memory for new FeatureContainer object could not be allocated!\n");
+      cerr << "Error: Memory for new FeatureContainer object could not be allocated!\n";
       throw;
     }
     
@@ -191,7 +191,7 @@ bool ArffFileHandling::FeatureContainerSequence::append(ArffFileHandling::Featur
   try {
     _list.push_back(new FeatureContainer(*newFC));
   } catch (std::bad_alloc& e){
-    BGDBG (0, "Not enough memory: FeatureContainer (%p) could not be appended to FeatureContainerSequence!\n", newFC);
+    cerr << "Not enough memory: FeatureContainer (" << newFC << ") could not be appended to FeatureContainerSequence!\n";
     return false;
   }
 
@@ -236,11 +236,11 @@ void ArffFileHandling::TrainingsDataContainer::addData(const unsigned int activi
 {
   assert ( (activity < _numberOfActivities) && newData!=NULL);
   
-  BGDBG (5, "Added data for activity %d with container at address %p\n", activity, newData);
+  cerr << "Added data for activity " << activity << " with container at address " << newData << "\n";
   _data[activity].push_back(newData);
 }
 
-void ArffFileHandling::TrainingsDataContainer::print(ostream& o, bg::strlist* activityNames) const
+void ArffFileHandling::TrainingsDataContainer::print(ostream& o, vector<string>* activityNames) const
 {
   if (activityNames!=NULL && activityNames->size()>=_numberOfActivities){
     printDataWithActivities(o, activityNames);
@@ -268,7 +268,7 @@ void ArffFileHandling::TrainingsDataContainer::printDataOnly(ostream& ostr) cons
   }
 }
 
-void ArffFileHandling::TrainingsDataContainer::printDataWithActivities(ostream& ostr, bg::strlist* activityNames) const
+void ArffFileHandling::TrainingsDataContainer::printDataWithActivities(ostream& ostr, vector<string>* activityNames) const
 {
   int featuresPerRow = getFrame(0,0,0)->getNumberOfFeatures();
   FeatureContainer* f=NULL;

@@ -6,7 +6,7 @@
     Please put your documentation for this file here.
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 29.11.09
+    \par Date of last change: 08.08.10
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -21,7 +21,8 @@
 #define ARFFDATA_H
 
 /* system includes */
-#include <bgtools.h>
+#include <string>
+#include <map>
 
 /* my includes */
 #include "Containers.h"

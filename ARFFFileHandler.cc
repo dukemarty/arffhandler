@@ -6,7 +6,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 17.12.09
+    Date of last change: 08.08.10
 
     Revision: 0.1
 
@@ -21,10 +21,16 @@
 /* system includes */
 #include <assert.h>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 /* my includes */
 #include "ARFFFileHandler.h"
+
+namespace bpt = boost::posix_time;
+namespace ba = boost::algorithm;
 
 
 ArffFileHandling::ARFFFileHandler::ARFFFileHandler()
@@ -58,8 +64,8 @@ void ArffFileHandling::ARFFFileHandler::printHeader(ostream& out, string filenam
   // write meta header
   out << "% 1.  Title:" << endl << "% " << filename.c_str() << endl << "%" << endl;
   out << "% 2.  Created by:" << endl << "% ARFF Handler Library" << endl << "%" << endl;
-  out << "% 3.  Creation date:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
-  out << "% 4.  Creation time:" << endl << "% " << bg::time::now().toString(true).c_str() << endl << "%" << endl;
+  out << "% 3.  Creation date:" << endl << "% " << bpt::to_iso_string(bpt::microsec_clock::local_time()) << endl << "%" << endl;
+  out << "% 4.  Creation time:" << endl << "% " << bpt::to_iso_string(bpt::microsec_clock::local_time()) << endl << "%" << endl;
   out << "% 5.  Number of Instances:" << endl << "% " << _arffcontent.getNumberOfInstances() << endl << "%" << endl;
   out << "% 6.  Number Of Attributes:" << endl << "% " << _arffcontent.getNumberOfFeatures() << endl << "%" << endl;
   out << "% 7.  Attribute Information:" << endl << "%" << endl;
@@ -95,23 +101,26 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
   
   //Successfully opened?
   if (!arffFile){    
-    BGDBG (3, "Throwing exception ios_base::failure\n");
+    cerr << "Throwing exception ios_base::failure\n";
     throw ios_base::failure("Open .arff file for loading feature sequence");
   }
 
   /////////////////// Read attributes ///////////////////////////
   char buf[3072];
-  bg::string attrName;
+  string attrName;
   int attributeCountAll = 0;
   while (arffFile.getline(buf, sizeof(buf))){
+    string bufString(buf);
     //Check only lines starting with "@attribute"
-    if(bg::string(buf).startsWith("@attribute")) {
+    if (ba::starts_with(bufString, "@attribute")) {
       //Check FeatureNumber
-      bg::strlist tokensAfterSpaceSplit = bg::string(buf).split(" ");
-      bg::strlist tokens;
-      for (bg::strlist::iterator itSpace=tokensAfterSpaceSplit.begin(); itSpace!=tokensAfterSpaceSplit.end(); itSpace++){
-	bg::strlist tokensAfterTabSplit = itSpace->split("\t");
-	for (bg::strlist::iterator itTab=tokensAfterTabSplit.begin(); itTab!=tokensAfterTabSplit.end(); itTab++){
+      vector<string> tokensAfterSpaceSplit;
+      ba::split(tokensAfterSpaceSplit, bufString, ba::is_any_of(" "));
+      vector<string> tokens;
+      for (vector<string>::iterator itSpace=tokensAfterSpaceSplit.begin(); itSpace!=tokensAfterSpaceSplit.end(); itSpace++){
+	vector<string> tokensAfterTabSplit;
+	ba::split(tokensAfterTabSplit, *itSpace, ba::is_any_of("\t"));
+	for (vector<string>::iterator itTab=tokensAfterTabSplit.begin(); itTab!=tokensAfterTabSplit.end(); itTab++){
 	  tokens.push_back(*itTab);
 	}
       }
@@ -122,20 +131,21 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
 	// parsing valid class values
 	int openPos = classline.find("{");
 	int closePos = classline.find("}");
-	bg::string values = classline.substr(openPos + 1, closePos - openPos - 1);
-	bg::strlist classValTokens = values.split(",");
+	string values = classline.substr(openPos + 1, closePos - openPos - 1);
+	vector<string> classValTokens;
+	ba::split(classValTokens, values, ba::is_any_of(","));
 	for (unsigned int i=0; i<classValTokens.size(); i++){
 	  _arffcontent.addClass(i, classValTokens[i]);
 	}
       } else {
 	if (tokens[2] != "numeric"){
-	  BGDBG (3, "Throwing exception domain_error\n");
+	  cerr << "Throwing exception domain_error\n";
 	  throw domain_error("Attribute is not numeric");
 	}
       }
       _arffcontent.addFeature(attributeCountAll, attrName);
       attributeCountAll++;
-    } else if(bg::string(buf).startsWith("@data")) {
+    } else if (ba::starts_with(bufString, "@data")) {
       //Break if entering the data part
       break;
     }
@@ -151,8 +161,9 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
   int currentClass=_arffcontent.getNumberOfClasses();
   
   while (arffFile.getline(buf, sizeof(buf))){
+    string bufString(buf);
     //ignore comments, and if no "," is in the line, ignore it
-    if(((bg::string(buf))[0] == '%') || ((bg::string(buf))[0] == '\n') || (bg::string(buf).find(",") == bg::string::npos) ){
+    if((bufString[0] == '%') || (bufString[0] == '\n') || (bufString.find(",") == string::npos) ){
       continue;
     }
 
@@ -161,10 +172,13 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
 
     
     //Split the line at the separators
-    bg::strlist tokens = bg::string(buf).split(",");
+    vector<string> tokens;
+    ba::split(tokens, bufString, ba::is_any_of(","));
     for (unsigned int attrCount=0; attrCount<tokens.size(); attrCount++){
       if( _arffcontent.getFeatureName(attrCount) != "class"){
-	newData = tokens[attrCount].toFloat();
+// 	newData = tokens[attrCount].toFloat();
+	istringstream iss(tokens[attrCount]);
+	iss >> newData;
 	instance->setData(attrCount, newData);
       } else {
 	int instanceClass = _arffcontent.getClassIndex(tokens[attrCount]);
