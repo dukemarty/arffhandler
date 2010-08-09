@@ -4,8 +4,11 @@ syntax: glob
 *~
 *.o
 .sconsign.dblite
+*.arff
 
 ARFFManager
 libarffhandlerlib.a
+UnitTests/ARFFHandlerTests
 
 doc/
+

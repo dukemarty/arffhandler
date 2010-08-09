@@ -98,7 +98,7 @@ namespace ARFFHANDLERNAMESPACE {
     //@{
     //! \name Handling feature information
     /*!
-      \brief Get number of features in the arff file.
+      \brief Get number of features in the arff data.
 
       @return number of features.
     */
@@ -143,6 +143,12 @@ namespace ARFFHANDLERNAMESPACE {
       @return index of the class, -1 if the class (name) does not exist
     */
     int getClassIndex(string name) const;
+    /*!
+      \brief Add new class to set of classes of the arff data.
+
+      @param index index of the new class
+      @param name name of the class
+    */
     void addClass(unsigned int index, string name);
     //@}
 

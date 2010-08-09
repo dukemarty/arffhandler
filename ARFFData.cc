@@ -17,6 +17,7 @@
 /* system includes */
 #include <assert.h>
 #include <vector>
+#include <stdexcept>
 
 /* my includes */
 #include "ARFFData.h"
@@ -58,6 +59,10 @@ unsigned int ARFFHANDLERNAMESPACE::ARFFData::getNumberOfFeatures() const
 
 string ARFFHANDLERNAMESPACE::ARFFData::getFeatureName(unsigned int index) const
 {
+  if (index >= _featList.size()){
+    throw std::out_of_range("Requested feature does not exists.");
+  }
+  
   return _featList.find(index)->second;
 }
 
