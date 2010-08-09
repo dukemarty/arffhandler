@@ -3,7 +3,7 @@
     \file  ARFFData.cc
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 08.08.10
+    \par Date of last change: 09.08.10
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -21,23 +21,23 @@
 /* my includes */
 #include "ARFFData.h"
 
-ArffFileHandling::ARFFData::ARFFData()
+ARFFHANDLERNAMESPACE::ARFFData::ARFFData()
 {
   _data = NULL;
   _valid = false;
 }
 
-ArffFileHandling::ARFFData::~ARFFData()
+ARFFHANDLERNAMESPACE::ARFFData::~ARFFData()
 {
   delete _data;
 }
 
-bool ArffFileHandling::ARFFData::isValid() const
+bool ARFFHANDLERNAMESPACE::ARFFData::isValid() const
 {
   return _valid;
 }
 
-void ArffFileHandling::ARFFData::clear()
+void ARFFHANDLERNAMESPACE::ARFFData::clear()
 {
   _featList.clear();
   _class2index.clear();
@@ -51,27 +51,27 @@ void ArffFileHandling::ARFFData::clear()
   assert (_valid == false);
 }
 
-unsigned int ArffFileHandling::ARFFData::getNumberOfFeatures() const
+unsigned int ARFFHANDLERNAMESPACE::ARFFData::getNumberOfFeatures() const
 {
   return _featList.size();
 }
 
-string ArffFileHandling::ARFFData::getFeatureName(unsigned int index) const
+string ARFFHANDLERNAMESPACE::ARFFData::getFeatureName(unsigned int index) const
 {
   return _featList.find(index)->second;
 }
 
-void ArffFileHandling::ARFFData::addFeature(unsigned int index, string name)
+void ARFFHANDLERNAMESPACE::ARFFData::addFeature(unsigned int index, string name)
 {
   _featList[index] = name;
 }
 
-unsigned int ArffFileHandling::ARFFData::getNumberOfClasses() const
+unsigned int ARFFHANDLERNAMESPACE::ARFFData::getNumberOfClasses() const
 {
   return _class2index.size();
 }
 
-string ArffFileHandling::ARFFData::getClassName(unsigned int index) const
+string ARFFHANDLERNAMESPACE::ARFFData::getClassName(unsigned int index) const
 {
   string res="";
   ClassValuesByIndex::const_iterator it = _index2class.find(index);
@@ -81,7 +81,7 @@ string ArffFileHandling::ARFFData::getClassName(unsigned int index) const
   return res;
 }
 
-int ArffFileHandling::ARFFData::getClassIndex(string name) const
+int ARFFHANDLERNAMESPACE::ARFFData::getClassIndex(string name) const
 {
   int res=-1;
   ClassValuesByName::const_iterator it = _class2index.find(name);
@@ -91,25 +91,25 @@ int ArffFileHandling::ARFFData::getClassIndex(string name) const
   return res;
 }
 
-void ArffFileHandling::ARFFData::addClass(unsigned int index, string name)
+void ARFFHANDLERNAMESPACE::ARFFData::addClass(unsigned int index, string name)
 {
   _class2index[name] = index;
   _index2class[index] = name;
 }
 
-ArffFileHandling::TrainingsDataContainer* ArffFileHandling::ARFFData::getData() const
+ARFFHANDLERNAMESPACE::TrainingsDataContainer* ARFFHANDLERNAMESPACE::ARFFData::getData() const
 {
   return _data;
 }
 
-int ArffFileHandling::ARFFData::getNumberOfInstances() const
+int ARFFHANDLERNAMESPACE::ARFFData::getNumberOfInstances() const
 {
   assert (_valid==true);
   
   return _data->getTotalNumberOfContainers();
 }
 
-void ArffFileHandling::ARFFData::initData()
+void ARFFHANDLERNAMESPACE::ARFFData::initData()
 {
   delete _data;
   _data = NULL;
@@ -121,14 +121,14 @@ void ArffFileHandling::ARFFData::initData()
   assert (_valid==true);
 }
 
-void ArffFileHandling::ARFFData::addDataSequence(unsigned int classindex, FeatureContainerSequence* data)
+void ARFFHANDLERNAMESPACE::ARFFData::addDataSequence(unsigned int classindex, FeatureContainerSequence* data)
 {
   assert (_valid==true);
   
   _data->addData(classindex, data);
 }
 
-void ArffFileHandling::ARFFData::printData(ostream& outstream) const
+void ARFFHANDLERNAMESPACE::ARFFData::printData(ostream& outstream) const
 {
   assert (_valid==true);
   

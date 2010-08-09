@@ -1,6 +1,6 @@
 /*! \if exist This is -*- C++ -*- from nbg \endif
 
-    \file  arffhandlerlib.h
+    \file  ARFFHandlerConfiguration.h
     \brief 
 
     Please put your documentation for this file here.
@@ -9,7 +9,7 @@
     Date of last change: 09.08.10
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
-    \date     2009-11-29
+    \date     2010-08-09
     \par Copyright:
               Martin Loesch, Chair Prof. Dillmann (IAIM)\n
               Institute for Computer Science and Engineering (CSE)\n
@@ -17,8 +17,8 @@
 	      http://wwwiaim.ira.uka.de
 */
 
-#ifndef ARFFHANDLERLIB_H
-#define ARFFHANDLERLIB_H
+#ifndef ARFFHANDLERCONFIGURATION_H
+#define ARFFHANDLERCONFIGURATION_H
 
 /* system includes */
 /* (none) */
@@ -26,8 +26,7 @@
 /* my includes */
 /* (none) */
 
-#include "ARFFFileHandler.h"
-#include "ARFFData.h"
-#include "ARFFContainers.h"
+#define ARFFHANDLERNAMESPACE ArffFileHandling
 
-#endif /* ARFFHANDLERLIB_H */
+
+#endif /* ARFFHANDLERCONFIGURATION_H */

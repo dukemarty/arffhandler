@@ -9,7 +9,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 08.08.10
+    Date of last change: 09.08.10
 
     Revision: 0.1
 
@@ -30,13 +30,14 @@
 #include <map>
 
 /* my includes */
-#include "Containers.h"
+#include "ARFFHandlerConfiguration.h"
+#include "ARFFContainers.h"
 #include "ARFFData.h"
 
 using namespace std;
 
 
-namespace ArffFileHandling {
+namespace ARFFHANDLERNAMESPACE {
 
   /*!
     \class ARFFFileHandler

@@ -1,12 +1,12 @@
 /*! \if exist This is -*- C++ -*- from nbg \endif
 
-  \file  Containers.h
+  \file  ARFFContainers.h
   \brief This file assembles the different container classes of cHARm.
 
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
   \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-  \par Date of last change: 08.08.10
+  \par Date of last change: 09.08.10
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -17,8 +17,8 @@
   http://wwwiaim.ira.uka.de
 */
 
-#ifndef CONTAINERS_H
-#define CONTAINERS_H
+#ifndef ARFFCONTAINERS_H
+#define ARFFCONTAINERS_H
 
 /* system includes */
 #include <string>
@@ -32,7 +32,7 @@
 using namespace std;
 
 
-namespace ArffFileHandling {
+namespace ARFFHANDLERNAMESPACE {
 
   // **********************************************************************
   /*!
@@ -260,4 +260,4 @@ namespace ArffFileHandling {
 
 }
   
-#endif /* CONTAINERS_H */
+#endif /* ARFFCONTAINERS_H */

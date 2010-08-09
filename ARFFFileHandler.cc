@@ -6,7 +6,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 08.08.10
+    Date of last change: 09.08.10
 
     Revision: 0.1
 
@@ -33,12 +33,12 @@ namespace bpt = boost::posix_time;
 namespace ba = boost::algorithm;
 
 
-ArffFileHandling::ARFFFileHandler::ARFFFileHandler()
+ARFFHANDLERNAMESPACE::ARFFFileHandler::ARFFFileHandler()
 {
   _filename = "";
 }
 
-ArffFileHandling::ARFFFileHandler::ARFFFileHandler(string filename)
+ARFFHANDLERNAMESPACE::ARFFFileHandler::ARFFFileHandler(string filename)
 {
   _filename = filename;
 
@@ -50,16 +50,16 @@ ArffFileHandling::ARFFFileHandler::ARFFFileHandler(string filename)
   }
 }
 
-ArffFileHandling::ARFFFileHandler::~ARFFFileHandler()
+ARFFHANDLERNAMESPACE::ARFFFileHandler::~ARFFFileHandler()
 {
 }
 
-void ArffFileHandling::ARFFFileHandler::clearData()
+void ARFFHANDLERNAMESPACE::ARFFFileHandler::clearData()
 {
   _arffcontent.clear();
 }
 
-void ArffFileHandling::ARFFFileHandler::printHeader(ostream& out, string filename) const
+void ARFFHANDLERNAMESPACE::ARFFFileHandler::printHeader(ostream& out, string filename) const
 {
   // write meta header
   out << "% 1.  Title:" << endl << "% " << filename.c_str() << endl << "%" << endl;
@@ -91,7 +91,7 @@ void ArffFileHandling::ARFFFileHandler::printHeader(ostream& out, string filenam
   out << "@data" << endl;
 }
 
-bool ArffFileHandling::ARFFFileHandler::load(string filename)
+bool ARFFHANDLERNAMESPACE::ARFFFileHandler::load(string filename)
 {
   clearData();
   
@@ -161,9 +161,9 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
 
   //Reading data part line by line 
   FeatureContainerSequence* currentSequence=NULL;
-  FeatureContainer* instance;
+  FeatureContainer* instance=NULL;
   double newData;	//stores one attribute in one line
-  int currentClass=_arffcontent.getNumberOfClasses();
+  int currentClass=-1;
   
   while (arffFile.getline(buf, sizeof(buf))){
     string bufString(buf);
@@ -202,11 +202,24 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
   _arffcontent.addDataSequence(currentClass, currentSequence);
 	
   arffFile.close();
+
+  cerr << endl << "--------------------------------------" << endl;
+  cerr << "  ARFFHANDLERNAMESPACE::load()" << endl;
+  TrainingsDataContainer* temp = _arffcontent.getData();
+  cerr << "Address of TrainingsDataContainer :  " << temp << endl;
+  cerr << "Number of activities loaded :  " << temp->getNumberOfActivities() << endl;
+  for (unsigned int i=0; i<temp->getNumberOfActivities(); i++){
+    cerr << "Number of sequences loaded for activity=" << i << " :  " << temp->getNumberOfSequences(i) << endl;
+    for (unsigned int j=0; j<temp->getNumberOfSequences(i); j++){
+      cerr << "    Length of sequence " << j << " :  " << temp->getSequenceLength(i, j) << endl;
+    }
+  }
+  cerr << "--------------------------------------" << endl;
   
   return _arffcontent.isValid();
 }
 
-bool ArffFileHandling::ARFFFileHandler::save(string filename) const
+bool ARFFHANDLERNAMESPACE::ARFFFileHandler::save(string filename) const
 {
   ofstream outfile(filename.c_str(), fstream::out);
 
@@ -221,7 +234,7 @@ bool ArffFileHandling::ARFFFileHandler::save(string filename) const
   return _arffcontent.isValid();
 }
 
-ArffFileHandling::ARFFData* ArffFileHandling::ARFFFileHandler::getData()
+ARFFHANDLERNAMESPACE::ARFFData* ARFFHANDLERNAMESPACE::ARFFFileHandler::getData()
 {
   return &_arffcontent;
 }

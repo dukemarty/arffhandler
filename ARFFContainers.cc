@@ -1,9 +1,9 @@
 /*! \if exist This is -*- C++ -*- from nbg \endif
 
-    \file  Containers.cc
+    \file  ARFFContainers.cc
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 08.08.10
+    \par Date of last change: 09.08.10
 
     \author    Martin Loesch (<loesch@ira.uka.de>)
     \date      08.02.07
@@ -20,21 +20,22 @@
 #include <cmath>
 
 /* my includes */
-#include "Containers.h"
+#include "ARFFHandlerConfiguration.h"
+#include "ARFFContainers.h"
 
 
 
 // **********************************************************************
 // ***** FeatureContainer stuff *****************************************
 
-ArffFileHandling::FeatureContainer::FeatureContainer()
+ARFFHANDLERNAMESPACE::FeatureContainer::FeatureContainer()
 {
   m_numberOfFeatures = 0;
 
   m_data = NULL;
 }
 
-ArffFileHandling::FeatureContainer::FeatureContainer(const int numberOfFeatures)
+ARFFHANDLERNAMESPACE::FeatureContainer::FeatureContainer(const int numberOfFeatures)
 {
   assert (numberOfFeatures>0);
   
@@ -50,7 +51,7 @@ ArffFileHandling::FeatureContainer::FeatureContainer(const int numberOfFeatures)
   assert (m_data!=NULL);
 }
 
-ArffFileHandling::FeatureContainer::FeatureContainer(const ArffFileHandling::FeatureContainer& orig)
+ARFFHANDLERNAMESPACE::FeatureContainer::FeatureContainer(const ARFFHANDLERNAMESPACE::FeatureContainer& orig)
 {
   m_numberOfFeatures = orig.m_numberOfFeatures;
 
@@ -66,22 +67,22 @@ ArffFileHandling::FeatureContainer::FeatureContainer(const ArffFileHandling::Fea
   assert (m_data!=NULL);
 }
 
-ArffFileHandling::FeatureContainer::~FeatureContainer()
+ARFFHANDLERNAMESPACE::FeatureContainer::~FeatureContainer()
 {
   if (m_data) delete[] m_data;
 }
 
-bool ArffFileHandling::FeatureContainer::checkIsValid() const
+bool ARFFHANDLERNAMESPACE::FeatureContainer::checkIsValid() const
 {
   return (m_data!=NULL);
 }
 
-unsigned int ArffFileHandling::FeatureContainer::getNumberOfFeatures() const
+unsigned int ARFFHANDLERNAMESPACE::FeatureContainer::getNumberOfFeatures() const
 {
   return m_numberOfFeatures;
 }
 
-void ArffFileHandling::FeatureContainer::setNumberOfFeatures(const unsigned int newSize)
+void ARFFHANDLERNAMESPACE::FeatureContainer::setNumberOfFeatures(const unsigned int newSize)
 {
   assert (newSize>0);
 
@@ -101,7 +102,7 @@ void ArffFileHandling::FeatureContainer::setNumberOfFeatures(const unsigned int 
   assert (m_data!=NULL);
 }
 
-double ArffFileHandling::FeatureContainer::getData(const unsigned int index) const
+double ARFFHANDLERNAMESPACE::FeatureContainer::getData(const unsigned int index) const
 {
   assert (checkIsValid());
   assert (index<m_numberOfFeatures);
@@ -109,7 +110,7 @@ double ArffFileHandling::FeatureContainer::getData(const unsigned int index) con
   return m_data[index];
 }
 
-void ArffFileHandling::FeatureContainer::setData(const unsigned int index, const double newData)
+void ARFFHANDLERNAMESPACE::FeatureContainer::setData(const unsigned int index, const double newData)
 {
   assert (checkIsValid());
   assert (index<m_numberOfFeatures);
@@ -120,7 +121,7 @@ void ArffFileHandling::FeatureContainer::setData(const unsigned int index, const
   assert (getData(index)==newData);
 }
 
-ArffFileHandling::FeatureContainer& ArffFileHandling::FeatureContainer::operator=(const ArffFileHandling::FeatureContainer& right)
+ARFFHANDLERNAMESPACE::FeatureContainer& ARFFHANDLERNAMESPACE::FeatureContainer::operator=(const ARFFHANDLERNAMESPACE::FeatureContainer& right)
 {
   m_numberOfFeatures = right.m_numberOfFeatures;
 
@@ -144,7 +145,7 @@ ArffFileHandling::FeatureContainer& ArffFileHandling::FeatureContainer::operator
   return *this;
 }
 
-const bool ArffFileHandling::FeatureContainer::isEqual(ArffFileHandling::FeatureContainer* other) const
+const bool ARFFHANDLERNAMESPACE::FeatureContainer::isEqual(ARFFHANDLERNAMESPACE::FeatureContainer* other) const
 {
   assert (checkIsValid());
 
@@ -164,18 +165,18 @@ const bool ArffFileHandling::FeatureContainer::isEqual(ArffFileHandling::Feature
 // **********************************************************************
 // ***** FeatureContainerSequence stuff *********************************
 
-ArffFileHandling::FeatureContainerSequence::FeatureContainerSequence()
+ARFFHANDLERNAMESPACE::FeatureContainerSequence::FeatureContainerSequence()
 {
 }
 
-ArffFileHandling::FeatureContainerSequence::~FeatureContainerSequence()
+ARFFHANDLERNAMESPACE::FeatureContainerSequence::~FeatureContainerSequence()
 {
   for (vector<FeatureContainer* >::iterator it=_list.begin(); it!=_list.end(); it++){
     delete *it;
   }
 }
 
-void ArffFileHandling::FeatureContainerSequence::clear()
+void ARFFHANDLERNAMESPACE::FeatureContainerSequence::clear()
 {
   for (vector<FeatureContainer* >::iterator it=_list.begin(); it!=_list.end(); it++){
     delete *it;
@@ -184,7 +185,7 @@ void ArffFileHandling::FeatureContainerSequence::clear()
   _list.clear();
 }
 
-bool ArffFileHandling::FeatureContainerSequence::append(ArffFileHandling::FeatureContainer* newFC)
+bool ARFFHANDLERNAMESPACE::FeatureContainerSequence::append(ARFFHANDLERNAMESPACE::FeatureContainer* newFC)
 {
   assert (newFC!=NULL);
   
@@ -203,13 +204,13 @@ bool ArffFileHandling::FeatureContainerSequence::append(ArffFileHandling::Featur
 // **********************************************************************
 // ***** TrainingsDataContainer stuff ***********************************
 
-ArffFileHandling::TrainingsDataContainer::TrainingsDataContainer(unsigned int numberOfActivities)
+ARFFHANDLERNAMESPACE::TrainingsDataContainer::TrainingsDataContainer(unsigned int numberOfActivities)
 {
   _numberOfActivities = numberOfActivities;
   _data.resize(_numberOfActivities);
 }
 
-ArffFileHandling::TrainingsDataContainer::~TrainingsDataContainer()
+ARFFHANDLERNAMESPACE::TrainingsDataContainer::~TrainingsDataContainer()
 {
   for (unsigned int i=0; i<_numberOfActivities; i++){
     for (vector<FeatureContainerSequence* >::iterator it=_data[i].begin(); it!=_data[i].end(); it++){
@@ -218,7 +219,7 @@ ArffFileHandling::TrainingsDataContainer::~TrainingsDataContainer()
   }
 }
 
-int ArffFileHandling::TrainingsDataContainer::getTotalNumberOfContainers() const
+int ARFFHANDLERNAMESPACE::TrainingsDataContainer::getTotalNumberOfContainers() const
 {
   int result=0;
   
@@ -232,7 +233,7 @@ int ArffFileHandling::TrainingsDataContainer::getTotalNumberOfContainers() const
   return result;
 }
 
-void ArffFileHandling::TrainingsDataContainer::addData(const unsigned int activity, ArffFileHandling::FeatureContainerSequence* newData)
+void ARFFHANDLERNAMESPACE::TrainingsDataContainer::addData(const unsigned int activity, ARFFHANDLERNAMESPACE::FeatureContainerSequence* newData)
 {
   assert (activity < _numberOfActivities);
   assert (newData!=NULL);
@@ -240,7 +241,7 @@ void ArffFileHandling::TrainingsDataContainer::addData(const unsigned int activi
   _data[activity].push_back(newData);
 }
 
-void ArffFileHandling::TrainingsDataContainer::print(ostream& o, vector<string>* activityNames) const
+void ARFFHANDLERNAMESPACE::TrainingsDataContainer::print(ostream& o, vector<string>* activityNames) const
 {
   if (activityNames!=NULL && activityNames->size()>=_numberOfActivities){
     printDataWithActivities(o, activityNames);
@@ -249,7 +250,7 @@ void ArffFileHandling::TrainingsDataContainer::print(ostream& o, vector<string>*
   }
 }
 
-void ArffFileHandling::TrainingsDataContainer::printDataOnly(ostream& ostr) const
+void ARFFHANDLERNAMESPACE::TrainingsDataContainer::printDataOnly(ostream& ostr) const
 {
   int featuresPerRow = getFrame(0,0,0)->getNumberOfFeatures();
   FeatureContainer* f=NULL;
@@ -268,7 +269,7 @@ void ArffFileHandling::TrainingsDataContainer::printDataOnly(ostream& ostr) cons
   }
 }
 
-void ArffFileHandling::TrainingsDataContainer::printDataWithActivities(ostream& ostr, vector<string>* activityNames) const
+void ARFFHANDLERNAMESPACE::TrainingsDataContainer::printDataWithActivities(ostream& ostr, vector<string>* activityNames) const
 {
   int featuresPerRow = getFrame(0,0,0)->getNumberOfFeatures();
   FeatureContainer* f=NULL;
@@ -288,9 +289,9 @@ void ArffFileHandling::TrainingsDataContainer::printDataWithActivities(ostream& 
 }
 
 
-#if Containers_test
+#if ARFFContainers_test
 
-using namespace ArffFileHandling;
+using namespace ARFFHANDLERNAMESPACE;
 
 #define RESULT { cerr << "correct" << endl; } else { cerr << "error" << endl; }
 
@@ -438,11 +439,11 @@ int main(int argc, char **argv)
 {
   // This is a module-test block. You can put code here that tests
   // just the contents of this C file, and build it by saying
-  //             make Containers_test
-  // Then, run the resulting executable (Containers_test).
+  //             make ARFFContainers_test
+  // Then, run the resulting executable (ARFFContainers_test).
   // If it works as expected, the module is probably correct. ;-)
 
-  cerr << endl << "===== ===== Testing Containers ===== =====" << endl << endl;
+  cerr << endl << "===== ===== Testing ARFFContainers ===== =====" << endl << endl;
 
   testFeatureContainer();
 

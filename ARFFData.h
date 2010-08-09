@@ -6,7 +6,7 @@
     Please put your documentation for this file here.
 
     \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 08.08.10
+    \par Date of last change: 09.08.10
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -25,7 +25,8 @@
 #include <map>
 
 /* my includes */
-#include "Containers.h"
+#include "ARFFHandlerConfiguration.h"
+#include "ARFFContainers.h"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ using namespace std;
   \namespace ArffFileHandling
   \brief Namespace for all classes and types of the ARFF Handler Library.
 */
-namespace ArffFileHandling {
+namespace ARFFHANDLERNAMESPACE {
 
   //! type for numbered feature lists
   typedef map<int, string> FeatureList;
