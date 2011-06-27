@@ -6,7 +6,7 @@
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
   \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-  \par Date of last change: 09.08.10
+  \par Date of last change: 10.01.11
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -258,6 +258,6 @@ namespace ARFFHANDLERNAMESPACE {
     void print(ostream& outstream, vector<string>* activityNames=NULL) const;
   };
 
-}
+};
   
 #endif /* ARFFCONTAINERS_H */
