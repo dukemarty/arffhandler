@@ -8,8 +8,8 @@
     Creator: Martin Lösch (<loesch@ira.uka.de>)
     Date of creation: 07.06.08
 
-    Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 09.08.10
+    Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+    Date of last change: 23.08.11
 
     Revision: 0.1
 
@@ -30,14 +30,13 @@
 #include <map>
 
 /* my includes */
-#include "ARFFHandlerConfiguration.h"
 #include "ARFFContainers.h"
 #include "ARFFData.h"
 
 using namespace std;
 
 
-namespace ARFFHANDLERNAMESPACE {
+namespace ArffFileHandling {
 
   /*!
     \class ARFFFileHandler

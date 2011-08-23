@@ -5,8 +5,8 @@
 
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
-  \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-  \par Date of last change: 10.01.11
+  \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+  \par Date of last change: 23.08.11
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -26,13 +26,13 @@
 #include <iostream>
 
 /* my includes */
-#include <ARFFHandlerConfiguration.h>
+/* none */
 
 
 using namespace std;
 
 
-namespace ARFFHANDLERNAMESPACE {
+namespace ArffFileHandling {
 
   // **********************************************************************
   /*!

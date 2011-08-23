@@ -5,8 +5,8 @@
     Creator: Martin Lösch (<loesch@ira.uka.de>)
     Date of creation: 07.06.08
 
-    Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 09.08.10
+    Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+    Date of last change: 23.08.11
 
     Revision: 0.1
 
@@ -33,12 +33,12 @@ namespace bpt = boost::posix_time;
 namespace ba = boost::algorithm;
 
 
-ARFFHANDLERNAMESPACE::ARFFFileHandler::ARFFFileHandler()
+ArffFileHandling::ARFFFileHandler::ARFFFileHandler()
 {
   _filename = "";
 }
 
-ARFFHANDLERNAMESPACE::ARFFFileHandler::ARFFFileHandler(string filename)
+ArffFileHandling::ARFFFileHandler::ARFFFileHandler(string filename)
 {
   _filename = filename;
 
@@ -50,16 +50,16 @@ ARFFHANDLERNAMESPACE::ARFFFileHandler::ARFFFileHandler(string filename)
   }
 }
 
-ARFFHANDLERNAMESPACE::ARFFFileHandler::~ARFFFileHandler()
+ArffFileHandling::ARFFFileHandler::~ARFFFileHandler()
 {
 }
 
-void ARFFHANDLERNAMESPACE::ARFFFileHandler::clearData()
+void ArffFileHandling::ARFFFileHandler::clearData()
 {
   _arffcontent.clear();
 }
 
-void ARFFHANDLERNAMESPACE::ARFFFileHandler::printHeader(ostream& out, string filename) const
+void ArffFileHandling::ARFFFileHandler::printHeader(ostream& out, string filename) const
 {
   // write meta header
   out << "% 1.  Title:" << endl << "% " << filename.c_str() << endl << "%" << endl;
@@ -91,7 +91,7 @@ void ARFFHANDLERNAMESPACE::ARFFFileHandler::printHeader(ostream& out, string fil
   out << "@data" << endl;
 }
 
-bool ARFFHANDLERNAMESPACE::ARFFFileHandler::load(string filename)
+bool ArffFileHandling::ARFFFileHandler::load(string filename)
 {
   clearData();
   
@@ -204,7 +204,7 @@ bool ARFFHANDLERNAMESPACE::ARFFFileHandler::load(string filename)
   arffFile.close();
 
   cerr << endl << "--------------------------------------" << endl;
-  cerr << "  ARFFHANDLERNAMESPACE::load()" << endl;
+  cerr << "  ArffFileHandling::load()" << endl;
   TrainingsDataContainer* temp = _arffcontent.getData();
   cerr << "Address of TrainingsDataContainer :  " << temp << endl;
   cerr << "Number of activities loaded :  " << temp->getNumberOfActivities() << endl;
@@ -219,7 +219,7 @@ bool ARFFHANDLERNAMESPACE::ARFFFileHandler::load(string filename)
   return _arffcontent.isValid();
 }
 
-bool ARFFHANDLERNAMESPACE::ARFFFileHandler::save(string filename) const
+bool ArffFileHandling::ARFFFileHandler::save(string filename) const
 {
   ofstream outfile(filename.c_str(), fstream::out);
 
@@ -234,7 +234,7 @@ bool ARFFHANDLERNAMESPACE::ARFFFileHandler::save(string filename) const
   return _arffcontent.isValid();
 }
 
-ARFFHANDLERNAMESPACE::ARFFData* ARFFHANDLERNAMESPACE::ARFFFileHandler::getData()
+ArffFileHandling::ARFFData* ArffFileHandling::ARFFFileHandler::getData()
 {
   return &_arffcontent;
 }

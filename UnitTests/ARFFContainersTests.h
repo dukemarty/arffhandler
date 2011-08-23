@@ -3,8 +3,8 @@
     \file  ContainersTests.h
     \brief Test cases for the content of CHARMbase/Containers.h/.cc .
 
-    \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 14.10.08
+    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+    \par Date of last change: 23.08.11
 
     \author    Martin Loesch (<loesch@ira.uka.de>)
     \date      25.05.08
@@ -25,11 +25,10 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <ARFFHandlerConfiguration.h>
 #include <ARFFContainers.h>
 
 
-using namespace ARFFHANDLERNAMESPACE;
+using namespace ArffFileHandling;
 
 
 /*!

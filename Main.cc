@@ -2,8 +2,8 @@
 
     \file  Main.cc
 
-    \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 09.08.10
+    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+    \par Date of last change: 23.08.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-26
@@ -20,7 +20,6 @@
 
 /* my includes */
 #include "Main.h"
-#include "ARFFHandlerConfiguration.h"
 #include "arffhandlerlib.h"
 
 
@@ -66,7 +65,7 @@ void printUsageHint(string progname, bpo::options_description& options)
 
 int performCopy()
 {
-  ARFFHANDLERNAMESPACE::ARFFFileHandler handler;
+  ArffFileHandling::ARFFFileHandler handler;
 
   handler.load(g_inputfilename);
   std::cerr<< "** Successfully loaded file :  " << g_inputfilename << std::endl;
@@ -79,12 +78,12 @@ int performCopy()
 
 int performShow()
 {
-  ARFFHANDLERNAMESPACE::ARFFFileHandler handler;
+  ArffFileHandling::ARFFFileHandler handler;
   handler.load(g_inputfilename);
 
   std::cerr<< "** Successfully loaded file :  " << g_inputfilename << std::endl;
   
-  ARFFHANDLERNAMESPACE::ARFFData* readData = handler.getData();
+  ArffFileHandling::ARFFData* readData = handler.getData();
   readData->printData(std::cout);
 
   std::cerr << "** Printed loaded data to standard output" << std::endl;
