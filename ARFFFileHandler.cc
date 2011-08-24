@@ -6,7 +6,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    Date of last change: 23.08.11
+    Date of last change: 24.08.11
 
     Revision: 0.1
 
@@ -208,9 +208,9 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
   TrainingsDataContainer* temp = _arffcontent.getData();
   cerr << "Address of TrainingsDataContainer :  " << temp << endl;
   cerr << "Number of activities loaded :  " << temp->getNumberOfActivities() << endl;
-  for (unsigned int i=0; i<temp->getNumberOfActivities(); i++){
+  for (unsigned int i=0; i<temp->getNumberOfActivities(); ++i){
     cerr << "Number of sequences loaded for activity=" << i << " :  " << temp->getNumberOfSequences(i) << endl;
-    for (unsigned int j=0; j<temp->getNumberOfSequences(i); j++){
+    for (int j=0; j<temp->getNumberOfSequences(i); ++j){
       cerr << "    Length of sequence " << j << " :  " << temp->getSequenceLength(i, j) << endl;
     }
   }

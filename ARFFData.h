@@ -6,7 +6,7 @@
     Please put your documentation for this file here.
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 23.08.11
+    \par Date of last change: 24.08.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -63,6 +63,39 @@ namespace ArffFileHandling {
 
     //! pointer to the actual data (instances)
     TrainingsDataContainer* _data;
+
+    /*!
+      \brief Check validity of feature list.
+
+      The feature list is valid if it holds the same number of features as the TrainingsDataContainer and if the feature (numbers) are a full list without holes, starting from 0.
+      If there is no data in the TrainingsDataContainer yet, the result is true.
+
+      @pre _data != NULL
+
+      @return true if the list of features is valid, false else
+    */
+    bool checkFeatureListValidity() const;
+
+    /*!
+      \brief Check validity of class list.
+
+      The feature list is valid if it holds the same number of classes as the TrainingsDataContainer and if the classes (numbers) are a full list without holes, starting from 0.
+
+      @pre _data
+
+      @return true if the list of classes is valid, false else
+    */
+    bool checkClassListValidity() const;
+    
+    /*!
+      \brief Check object for its validity.
+
+      For an object to be valid, it must contain data (even if it's empty) and the number of
+      classes and features must match those of the TrainingsDataContainer.
+
+      @return true if the object is valid, false else
+    */
+    bool checkValidity() const;
     
   protected:
     
@@ -72,7 +105,7 @@ namespace ArffFileHandling {
     /*!
       \brief Initialize an empty (non-valid) ARFF data object.
 
-      @pre isValid()==false
+      @post isValid()==false
     */
     ARFFData();
     ~ARFFData();

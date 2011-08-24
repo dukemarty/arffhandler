@@ -3,7 +3,7 @@
     \file  ARFFData.cc
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 23.08.11
+    \par Date of last change: 24.08.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -31,6 +31,77 @@ ArffFileHandling::ARFFData::ARFFData()
 ArffFileHandling::ARFFData::~ARFFData()
 {
   delete _data;
+}
+
+bool ArffFileHandling::ARFFData::checkFeatureListValidity() const
+{
+  assert (_data!=NULL);
+  
+  bool validness=true;
+
+  if (_data->getNumberOfActivities()==0 || _data->getNumberOfSequences(0)==0){
+    return true;
+  }
+  
+  if (_featList.size()!=_data->getFrame(0, 0, 0)->getNumberOfFeatures()){
+    validness = false;
+  }
+
+  for (unsigned int i=0; i<_featList.size(); i++){
+    if (_featList.count(static_cast<int>(i))!=1){
+      validness = false;
+      break;
+    }
+  }
+
+  return validness;
+}
+
+bool ArffFileHandling::ARFFData::checkClassListValidity() const
+{
+  bool validness=true;
+  
+  if (_data==NULL || _class2index.size()!=_data->getNumberOfActivities()){
+    return false;
+  }
+
+  if (_class2index.size()!=_index2class.size()){
+    validness = false;
+  } else {
+    for (ClassValuesByIndex::const_iterator it=_index2class.begin(); it!=_index2class.end(); ++it){
+      if (_class2index.find(it->second)==_class2index.end() || it->first!=_class2index.find(it->second)->second){
+	validness = false;
+      }
+    }
+    for (ClassValuesByName::const_iterator it=_class2index.begin(); it!=_class2index.end(); ++it){
+      if (_index2class.find(it->second)==_index2class.end() || it->first!=_index2class.find(it->second)->second){
+	validness = false;
+      }
+    }
+  }
+  
+  return validness;
+}
+
+bool ArffFileHandling::ARFFData::checkValidity() const
+{
+  bool validness=true;
+
+  if (_data==NULL){
+    validness = false;
+  } else {
+    
+    if (!checkFeatureListValidity()){
+      validness = false;
+    }
+    
+    if (!checkClassListValidity()){
+      validness = false;
+    }
+
+  }
+
+  return validness;
 }
 
 bool ArffFileHandling::ARFFData::isValid() const
@@ -69,6 +140,8 @@ string ArffFileHandling::ARFFData::getFeatureName(unsigned int index) const
 void ArffFileHandling::ARFFData::addFeature(unsigned int index, string name)
 {
   _featList[index] = name;
+
+  _valid = checkValidity();
 }
 
 unsigned int ArffFileHandling::ARFFData::getNumberOfClasses() const
@@ -121,9 +194,8 @@ void ArffFileHandling::ARFFData::initData()
   _valid = false;
   
   _data = new TrainingsDataContainer(getNumberOfClasses());
-  _valid = true;
 
-  assert (_valid==true);
+  _valid = checkValidity();
 }
 
 void ArffFileHandling::ARFFData::addDataSequence(unsigned int classindex, FeatureContainerSequence* data)
