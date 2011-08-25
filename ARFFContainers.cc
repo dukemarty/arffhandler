@@ -3,7 +3,7 @@
     \file  ARFFContainers.cc
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 23.08.11
+    \par Date of last change: 25.08.11
 
     \author    Martin Loesch (<loesch@ira.uka.de>)
     \date      08.02.07
@@ -160,7 +160,35 @@ const bool ArffFileHandling::FeatureContainer::isEqual(ArffFileHandling::Feature
   return true;
 }
 
-  
+bool ArffFileHandling::FeatureContainer::removeFeature(const unsigned int index)
+{
+  if (index>=m_numberOfFeatures){ return false; }
+
+  double* newdata=NULL;
+  try {
+    newdata = new double[m_numberOfFeatures-1];
+  } catch (std::bad_alloc& e){
+    cerr << "Error: Memory for new FeatureContainer object could not be allocated!\n";
+    throw;
+  }
+
+  // copy all data from old container except the feature marked by index
+  for (unsigned int oldFeat=0, newFeat=0; oldFeat<m_numberOfFeatures; ++oldFeat){
+    if (oldFeat!=index){
+      newdata[newFeat] = m_data[oldFeat];
+      ++newFeat;
+    }
+  }
+
+  delete[] m_data;
+  m_data = newdata;
+
+  --m_numberOfFeatures;
+
+  return true;
+}
+
+
 // **********************************************************************
 // ***** FeatureContainerSequence stuff *********************************
 
@@ -238,6 +266,21 @@ void ArffFileHandling::TrainingsDataContainer::addData(const unsigned int activi
   assert (newData!=NULL);
   
   _data[activity].push_back(newData);
+}
+
+bool ArffFileHandling::TrainingsDataContainer::removeFeatureDataCompletely(unsigned int index)
+{
+  bool res=true;
+  
+  for (unsigned int dataClass=0; dataClass<_numberOfActivities; ++dataClass){
+    for (unsigned int seqIt=0; seqIt<_data[dataClass].size(); ++seqIt){
+      for (int inst=0; inst<_data[dataClass][seqIt]->getSeqLength(); ++inst){
+	res &= getFrame(dataClass, seqIt, inst)->removeFeature(index);
+      }
+    }
+  }
+
+  return res;
 }
 
 void ArffFileHandling::TrainingsDataContainer::print(ostream& o, vector<string>* activityNames) const

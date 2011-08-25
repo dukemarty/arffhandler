@@ -9,7 +9,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    Date of last change: 23.08.11
+    Date of last change: 24.08.11
 
     Revision: 0.1
 
@@ -81,7 +81,9 @@ namespace ArffFileHandling {
     ARFFFileHandler(string filename);
     ~ARFFFileHandler();
     //@}
-    
+
+    //@{
+    //! \name Storage-related methods
     /*!
       \brief Load data from an arff file.
 
@@ -96,7 +98,29 @@ namespace ArffFileHandling {
       @return true if the save was successfull, false else
     */
     bool save(string filename) const;
+    //@}
 
+    //@{
+    //! \name ARFF manipulation methods
+    /*!
+      \brief Remove feature from ARFF data.
+
+      @param index index of the feature which shall be removed
+      @return true if removal was successful, false else
+    */
+    bool removeFeature(int index);
+
+    /*!
+      \brief Remove feature from ARFF data.
+
+      \attention If the name is used for more than one feature, it can not be removed! Use the features index instead!
+      
+      @param name name of the feature which shall be removed
+      @return 0 if the removal was successful, 1 if it could not be removed (unknown reason), 2 if the feature name is used more than once
+    */     
+    int removeFeature(string name);
+    //@}
+    
     /*!
       \brief Get the read data as an object.
 

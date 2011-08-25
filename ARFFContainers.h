@@ -6,7 +6,7 @@
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
   \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-  \par Date of last change: 23.08.11
+  \par Date of last change: 25.08.11
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -124,7 +124,11 @@ namespace ArffFileHandling {
     const bool isEqual(FeatureContainer* other) const;
     const bool operator==(FeatureContainer& rvalue) const { return isEqual(&rvalue); };
     //@}
-    
+
+    //@{
+    //! \name Data manipulators
+    bool removeFeature(const unsigned int index);
+    //@}
   };
 
 
@@ -247,6 +251,14 @@ namespace ArffFileHandling {
     int getTotalNumberOfContainers() const;
     //@}
 
+    /*!
+      \brief Remove all data fo a single feature from all instance containers.
+
+      @param index index of feature whose data is to be removed
+      @return true if data could be removed, false else
+    */
+    bool removeFeatureDataCompletely(unsigned int index);
+    
     /*!
       \brief Print complete data to a stream.
 

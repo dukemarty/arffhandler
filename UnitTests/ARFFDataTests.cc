@@ -2,8 +2,8 @@
 
     \file  ARFFDataTests.cc
 
-    \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 09.08.10
+    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+    \par Date of last change: 25.08.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2010-08-09
@@ -22,8 +22,6 @@
 #include "ARFFDataTests.h"
 #include <ARFFData.h>
 
-using namespace ArffFileHandling;
-
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ARFFDataTests);
 
@@ -34,6 +32,44 @@ void ARFFDataTests::setUp(void)
 
 void ARFFDataTests::tearDown(void)
 {
+}
+
+void ARFFDataTests::initDataForManipulationTests(ARFFData& testdata)
+{
+  testdata.addFeature(0, "Feature0");
+  testdata.addFeature(1, "Feature1");
+  testdata.addFeature(2, "Feature2");
+  testdata.addFeature(3, "Feature3");
+  testdata.addFeature(4, "class");
+
+  testdata.addClass(0, "Class1");
+  testdata.addClass(1, "Class2");
+  
+  testdata.initData();
+
+  FeatureContainerSequence* seq=NULL;
+  FeatureContainer* inst=NULL;
+
+  seq = new FeatureContainerSequence();
+  inst = new FeatureContainer(testdata.getNumberOfFeatures() - 1);
+  for (int i=0; i<4; ++i){
+    inst->setData(i, 13 + i*i);
+  }
+  seq->append(inst);
+  inst = new FeatureContainer(testdata.getNumberOfFeatures() - 1);
+  for (int i=0; i<4; ++i){
+    inst->setData(i, 5 + i*i);
+  }
+  seq->append(inst);
+  testdata.addDataSequence(0, seq);
+  
+  seq = new FeatureContainerSequence();
+  inst = new FeatureContainer(testdata.getNumberOfFeatures() - 1);
+  for (int i=0; i<4; ++i){
+    inst->setData(i, 17 + i*i);
+  }
+  seq->append(inst);
+  testdata.addDataSequence(1, seq);
 }
 
 void ARFFDataTests::ConstructorTests(void)
@@ -53,9 +89,20 @@ void ARFFDataTests::FeatureHandlingTests(void)
   CPPUNIT_ASSERT(test1.getNumberOfFeatures()==1);
   test1.addFeature(1, "Feature2");
   CPPUNIT_ASSERT(test1.getNumberOfFeatures()==2);
+  
   CPPUNIT_ASSERT(test1.getFeatureName(0) == "Feature1");
   CPPUNIT_ASSERT(test1.getFeatureName(1) == "Feature2");
   CPPUNIT_ASSERT_THROW(test1.getFeatureName(2), std::out_of_range);
+
+  CPPUNIT_ASSERT(test1.getFeatureIndex("Feature1")==0);
+  CPPUNIT_ASSERT(test1.getFeatureIndex("Feature2")==1);
+  CPPUNIT_ASSERT(test1.getFeatureIndex("Feature3")==-1);
+  test1.addFeature(2, "Feature1");
+  CPPUNIT_ASSERT(test1.getFeatureIndex("Feature1")==0);
+  
+  CPPUNIT_ASSERT(test1.isFeatureUnique("Feature1")==false);
+  CPPUNIT_ASSERT(test1.isFeatureUnique("Feature2")==true);
+  CPPUNIT_ASSERT(test1.isFeatureUnique("Feature3")==false);
 }
 
 void ARFFDataTests::ClassHandlingTests(void)
@@ -108,6 +155,51 @@ void ARFFDataTests::InstanceHandlingTests(void)
   test1.initData();
 
   CPPUNIT_ASSERT(test1.getNumberOfInstances()==0);
+}
+
+void ARFFDataTests::DataManipulationTests(void)
+{
+  ARFFData test1;
+  initDataForManipulationTests(test1);
+
+  CPPUNIT_ASSERT(test1.isValid()==true);
+  CPPUNIT_ASSERT(test1.getNumberOfFeatures()==5);
+  CPPUNIT_ASSERT(test1.getNumberOfClasses()==2);
+  TrainingsDataContainer* data1 = test1.getData();
+  FeatureContainer* inst = data1->getFrame(0, 0, 0);
+  for (int i=0; i<4; ++i){
+    CPPUNIT_ASSERT(inst->getData(i)==13+i*i);
+  }
+  inst = data1->getFrame(0, 0, 1);
+  for (int i=0; i<4; ++i){
+    CPPUNIT_ASSERT(inst->getData(i)==5+i*i);
+  }
+  inst = data1->getFrame(1, 0, 0);
+  for (int i=0; i<4; ++i){
+    CPPUNIT_ASSERT(inst->getData(i)==17+i*i);
+  }
+
+  bool remRes = test1.removeFeature("Feature1");
+  CPPUNIT_ASSERT(remRes==true);
+  CPPUNIT_ASSERT(test1.isValid()==true);
+  CPPUNIT_ASSERT(test1.getNumberOfFeatures()==4);
+  CPPUNIT_ASSERT(test1.getNumberOfClasses()==2);
+  data1 = test1.getData();
+  inst = data1->getFrame(0, 0, 0);
+  CPPUNIT_ASSERT(inst->getData(0)==13);
+  for (int i=2; i<4; ++i){
+    CPPUNIT_ASSERT(inst->getData(i-1)==13+i*i);
+  }
+  inst = data1->getFrame(0, 0, 1);
+  CPPUNIT_ASSERT(inst->getData(0)==5);
+  for (int i=2; i<4; ++i){
+    CPPUNIT_ASSERT(inst->getData(i-1)==5+i*i);
+  }
+  inst = data1->getFrame(1, 0, 0);
+  CPPUNIT_ASSERT(inst->getData(0)==17);
+  for (int i=2; i<4; ++i){
+    CPPUNIT_ASSERT(inst->getData(i-1)==17+i*i);
+  }
 }
 
 

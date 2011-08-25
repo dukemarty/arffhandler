@@ -3,7 +3,7 @@
     \file  ARFFData.cc
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 24.08.11
+    \par Date of last change: 25.08.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -17,6 +17,7 @@
 /* system includes */
 #include <assert.h>
 #include <vector>
+#include <algorithm>
 #include <stdexcept>
 
 /* my includes */
@@ -43,7 +44,7 @@ bool ArffFileHandling::ARFFData::checkFeatureListValidity() const
     return true;
   }
   
-  if (_featList.size()!=_data->getFrame(0, 0, 0)->getNumberOfFeatures()){
+  if (_featList.size()!=(_data->getFrame(0, 0, 0)->getNumberOfFeatures()+1)){
     validness = false;
   }
 
@@ -104,6 +105,35 @@ bool ArffFileHandling::ARFFData::checkValidity() const
   return validness;
 }
 
+vector<int> ArffFileHandling::ARFFData::findIndizesForFeature(string name) const
+{
+  vector<int> results;
+  
+  for (FeatureList::const_iterator it=_featList.begin(); it!=_featList.end(); ++it){
+    if (it->second==name){
+      results.push_back(it->first);
+    }
+  }
+
+  return  results;
+}
+
+bool ArffFileHandling::ARFFData::removeFeatureConsistently(unsigned int index)
+{
+  assert (checkFeatureListValidity());
+  
+  if (index>=_featList.size()){ return false; }
+  
+  for (unsigned int i=index; i<_featList.size()-1; ++i){
+    _featList[i] = _featList[i+1];
+  }
+  _featList.erase(_featList.size()-1);
+  
+  _valid = checkValidity();
+
+  return true;
+}
+
 bool ArffFileHandling::ARFFData::isValid() const
 {
   return _valid;
@@ -137,11 +167,31 @@ string ArffFileHandling::ARFFData::getFeatureName(unsigned int index) const
   return _featList.find(index)->second;
 }
 
+int ArffFileHandling::ARFFData::getFeatureIndex(string name) const
+{
+  vector<int> indizes = findIndizesForFeature(name);
+  
+  int res=-1;
+  if (indizes.size()>0){
+    sort(indizes.begin(), indizes.end());
+    res = indizes[0];
+  }
+
+  return  res;
+}
+
 void ArffFileHandling::ARFFData::addFeature(unsigned int index, string name)
 {
   _featList[index] = name;
 
   _valid = checkValidity();
+}
+
+bool ArffFileHandling::ARFFData::isFeatureUnique(string name) const
+{
+  vector<int> indizes = findIndizesForFeature(name);
+
+  return (indizes.size()==1);
 }
 
 unsigned int ArffFileHandling::ARFFData::getNumberOfClasses() const
@@ -216,6 +266,40 @@ void ArffFileHandling::ARFFData::printData(ostream& outstream) const
   }
   
   _data->print(outstream, &classNames);
+}
+
+bool ArffFileHandling::ARFFData::removeFeature(unsigned int index)
+{
+  assert (_valid==true);
+  
+  if (index>_featList.size()){ return false; }
+
+  bool res=true;
+  
+  //! \todo Remove feature from list
+  res = removeFeatureConsistently(index);
+
+  if (res){
+    res = _data->removeFeatureDataCompletely(index);
+  }
+
+  _valid = checkValidity();
+
+  return res;
+}
+
+bool ArffFileHandling::ARFFData::removeFeature(string name)
+{
+  int index = getFeatureIndex(name);
+  bool res=false;
+
+  if (index==-1){
+    res = false;
+  } else {
+    res = removeFeature(index);
+  }
+
+  return res;
 }
 
 

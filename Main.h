@@ -5,8 +5,8 @@
 
     Please put your documentation for this file here.
 
-    \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 29.11.09
+    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+    Date of last change: 25.08.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-26
@@ -34,7 +34,8 @@ using namespace std;
 typedef enum {
   INVALID,
   COPY,
-  SHOW
+  SHOW,
+  REMFEATURE
 } OperationMode;
 
 
@@ -44,6 +45,8 @@ static OperationMode g_mode;
 static std::string g_inputfilename;
 //! global name of output file
 static std::string g_outputfilename;
+//! global name of chosen single feature
+static std::string g_featurename;
 
 
 /*!
@@ -71,6 +74,14 @@ void printUsageHint(string progname, bpo::options_description& options);
 */
 int performCopy();
 /*!
+  \brief Perform a remove feature operation.
+
+  \pre The parameters \em load and \em feature must be given. The \em save parameter is optional; if it is given, the changed loaded file is written to the save file, otherwise it is written to standard output.
+
+  @return 0 if everything went right, 1 else
+*/
+int performRemFeature();
+/*!
   \brief Perform a show operation.
 
   \pre The \em load parameter must be given. The loaded files data is written to the standard output.
@@ -88,6 +99,15 @@ int performShow();
   @return 0 if parsing was successful, 1 if parameters were missing
 */
 int processCopyParameters(bpo::variables_map& vm);
+/*!
+  \brief Parse parameters for a remove feature operation.
+
+  The parameters which are necessary for a feature removal are at least a load and a feature option. If at least one save parameter is given, the resulting arff is written to the file(s), otherwise the changed arff is written to standard out.
+  
+  @param vm structure containing all parameters
+  @return 0 if parsing was successful, 1 if parameters were missing
+*/
+int processRemFeatureParameters(bpo::variables_map& vm);
 /*!
   \brief Parse parameters for a show operation.
 

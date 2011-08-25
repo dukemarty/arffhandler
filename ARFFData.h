@@ -6,7 +6,7 @@
     Please put your documentation for this file here.
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 24.08.11
+    \par Date of last change: 25.08.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -96,7 +96,27 @@ namespace ArffFileHandling {
       @return true if the object is valid, false else
     */
     bool checkValidity() const;
+
+    /*!
+      \brief Find all feature indizes for a given feature name.
+
+      @param name of feature
+      @return list of feature indizes which have the given name
+    */
+    vector<int> findIndizesForFeature(string name) const;
     
+    /*!
+      \brief Remove feature consistently from list and data.
+
+      'Consistently' in this context means: The object has to be valid before; afterwards, it is not valid, because the feature number in the feature list and in the data are inconsistent. But the feature is removed from the feature list, and the features which had a higher feature number the the removed one are re-numbered.
+
+      @pre isValid() == true
+
+      @param index index of the feature to remove
+      @return true if the feature was removed, false else (e.g. because the index does not exist)
+    */
+    bool removeFeatureConsistently(unsigned int index);
+
   protected:
     
   public:
@@ -143,6 +163,15 @@ namespace ArffFileHandling {
     */
     string getFeatureName(unsigned int index) const;
     /*!
+      \brief Get index of a feature given its name.
+
+      \attention If there is more than one feature with the given name, the index of the first of these features (the one with the lowest index) is returned!
+      
+      @param name name of the feature
+      @return index of the feature if it exists, -1 else
+    */
+    int getFeatureIndex(string name) const;;
+    /*!
       \brief Add a feature to the arff data.
 
       \attention If a feature with the same number already exists, it is overwritten!
@@ -151,6 +180,15 @@ namespace ArffFileHandling {
       @param name name of the new feature
     */
     void addFeature(unsigned int index, string name);
+    /*!
+      \brief Check whether a feature name is unique
+
+      If the name does not denote any feature, the result will also be false!
+      
+      @param name name of the feature which is tested
+      @return true if the name is used for more than one feature, false else
+    */
+    bool isFeatureUnique(string name) const;
     //@}
 
     //@{
@@ -228,7 +266,30 @@ namespace ArffFileHandling {
     */
     void printData(ostream& outstream) const;
     //@}
-    
+
+    //@{
+    //! \name Manipulate data
+    /*!
+      \brief Remove a feature with a given index.
+
+      @pre isValid()==true
+      
+      @param index index of the feature
+      @return true if the feature was removed, false else (e.g. because index does not exist)
+    */
+    bool removeFeature(unsigned int index);
+    /*!
+      \brief Remove a feature with a given name.
+
+      \attention If there is more than one feature with the name, the first feature (i.e. that with the lowest index) is removed.
+      
+      @pre isValid()==true
+
+      @param name name of the feature
+      @return true if a feature was removed, false else (e.g. because the name does not exist)
+    */
+    bool removeFeature(string name);
+    //@}
   };
 
 };

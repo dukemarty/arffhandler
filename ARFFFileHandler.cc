@@ -234,6 +234,28 @@ bool ArffFileHandling::ARFFFileHandler::save(string filename) const
   return _arffcontent.isValid();
 }
 
+bool ArffFileHandling::ARFFFileHandler::removeFeature(int index)
+{
+  return _arffcontent.removeFeature(index);
+}
+
+int ArffFileHandling::ARFFFileHandler::removeFeature(string name)
+{
+  int res=0;
+  
+  if (_arffcontent.isFeatureUnique(name)){
+    if (_arffcontent.removeFeature(name)){
+      res = 0;
+    } else {
+      res = 1;
+    }
+  } else {
+    res = 2;
+  }
+
+  return res;
+}
+
 ArffFileHandling::ARFFData* ArffFileHandling::ARFFFileHandler::getData()
 {
   return &_arffcontent;
