@@ -200,7 +200,7 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     currentSequence->append(instance);
   }
   delete instance;
-  instance=NULL;
+  instance = NULL;
 
   _arffcontent.addDataSequence(currentClass, currentSequence);
 	
