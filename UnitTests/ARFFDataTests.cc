@@ -3,7 +3,7 @@
     \file  ARFFDataTests.cc
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 25.08.11
+    \par Date of last change: 08.11.11
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2010-08-09
@@ -56,6 +56,8 @@ void ARFFDataTests::initDataForManipulationTests(ARFFData& testdata)
     inst->setData(i, 13 + i*i);
   }
   seq->append(inst);
+
+  delete inst;
   inst = new FeatureContainer(testdata.getNumberOfFeatures() - 1);
   for (int i=0; i<4; ++i){
     inst->setData(i, 5 + i*i);
@@ -64,12 +66,15 @@ void ARFFDataTests::initDataForManipulationTests(ARFFData& testdata)
   testdata.addDataSequence(0, seq);
   
   seq = new FeatureContainerSequence();
+  delete inst;
   inst = new FeatureContainer(testdata.getNumberOfFeatures() - 1);
   for (int i=0; i<4; ++i){
     inst->setData(i, 17 + i*i);
   }
   seq->append(inst);
   testdata.addDataSequence(1, seq);
+
+  delete inst;
 }
 
 void ARFFDataTests::ConstructorTests(void)

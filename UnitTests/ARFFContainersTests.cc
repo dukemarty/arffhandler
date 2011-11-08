@@ -2,8 +2,8 @@
 
     \file  ARFFContainersTests.cc
 
-    Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    Date of last change: 09.08.10
+    Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
+    Date of last change: 08.11.11
 
     \author    Martin Lösch (<loesch@ira.uka.de>)
     \date      25.05.08
@@ -129,7 +129,9 @@ void ARFFContainersTests::FeatureContainerSequenceTest(void)
   CPPUNIT_ASSERT(fcsp2->getSeqLength()!=0);
   CPPUNIT_ASSERT_EQUAL(fcsp3->getSeqLength(), 0);
 
+  delete fcsfc2;
   fcsfc2 = new FeatureContainer(*fcsfc2templ);
+  delete fcsfc3;
   fcsfc3 = new FeatureContainer(*fcsfc3templ);
   fcsp3->append(fcsfc2); fcsp3->append(fcsfc3);
   // append()
@@ -153,6 +155,10 @@ void ARFFContainersTests::FeatureContainerSequenceTest(void)
   fcsp3->clear();
   CPPUNIT_ASSERT_EQUAL(fcsp2->getSeqLength(), 0);
   CPPUNIT_ASSERT_EQUAL(fcsp3->getSeqLength(), 0);
+
+  delete fcsfc1;
+  delete fcsfc2;
+  delete fcsfc3;
 }
 
 void ARFFContainersTests::TrainingsDataContainerTest(void)

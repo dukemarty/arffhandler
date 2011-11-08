@@ -6,7 +6,7 @@
     Date of creation: 07.06.08
 
     Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    Date of last change: 24.08.11
+    Date of last change: 08.11.11
 
     Revision: 0.1
 
@@ -173,6 +173,7 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     }
 
     //One instance per line
+    delete instance;
     instance = new FeatureContainer(_arffcontent.getNumberOfFeatures() - 1);
 
     
@@ -198,6 +199,8 @@ bool ArffFileHandling::ARFFFileHandler::load(string filename)
     
     currentSequence->append(instance);
   }
+  delete instance;
+  instance=NULL;
 
   _arffcontent.addDataSequence(currentClass, currentSequence);
 	

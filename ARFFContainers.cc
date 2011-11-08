@@ -3,7 +3,7 @@
     \file  ARFFContainers.cc
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 25.08.11
+    \par Date of last change: 08.11.11
 
     \author    Martin Loesch (<loesch@ira.uka.de>)
     \date      08.02.07
@@ -47,6 +47,10 @@ ArffFileHandling::FeatureContainer::FeatureContainer(const int numberOfFeatures)
     throw;
   }
 
+  for (int i=0; i<numberOfFeatures; ++i){
+    m_data[i] = 0.0;
+  }
+  
   assert (m_data!=NULL);
 }
 
@@ -212,7 +216,7 @@ void ArffFileHandling::FeatureContainerSequence::clear()
   _list.clear();
 }
 
-bool ArffFileHandling::FeatureContainerSequence::append(ArffFileHandling::FeatureContainer* newFC)
+bool ArffFileHandling::FeatureContainerSequence::append(const ArffFileHandling::FeatureContainer* newFC)
 {
   assert (newFC!=NULL);
   

@@ -4,7 +4,7 @@
     \brief Test cases for the content of CHARMbase/Containers.h/.cc .
 
     \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 23.08.11
+    \par Date of last change: 08.11.11
 
     \author    Martin Loesch (<loesch@ira.uka.de>)
     \date      25.05.08

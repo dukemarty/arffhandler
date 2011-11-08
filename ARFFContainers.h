@@ -6,7 +6,7 @@
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
   \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-  \par Date of last change: 25.08.11
+  \par Date of last change: 08.11.11
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -168,10 +168,12 @@ namespace ArffFileHandling {
     /*!
       \brief Append a FeatureContainer.
 
+      @attention The append operation will make a copy of the appended container.
+      
       @param newFC object to append
       @return true if the container has been appended, false else
     */
-    bool append(FeatureContainer* newFC);
+    bool append(const FeatureContainer* newFC);
     /*!
       \brief Get the pointer to an element of the sequence.
     
