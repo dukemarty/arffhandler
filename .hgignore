@@ -1,0 +1,15 @@
+syntax: glob
+
+.hgignore
+*~
+*.o
+.sconsign.dblite
+*.arff
+
+ARFFManager
+libarffhandlerlib.a
+UnitTests/ARFFHandlerTests
+UnitTests/libarffhandlerlibrary.a
+
+doc/
+data/
