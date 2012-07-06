@@ -18,6 +18,7 @@
 #include <fstream>
 #include <assert.h>
 #include <cmath>
+#include <cstring>
 
 /* my includes */
 #include "ARFFContainers.h"
