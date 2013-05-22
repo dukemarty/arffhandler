@@ -2,8 +2,8 @@
 
     \file  ARFFData.cc
 
-    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 25.08.11
+    \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
+    \par Date of last change: 22.05.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -23,6 +23,19 @@
 /* my includes */
 #include "ARFFData.h"
 
+
+ArffFileHandling::ARFFDataSet::ARFFDataSet()
+{
+}
+
+ArffFileHandling::ARFFDataSet::~ARFFDataSet()
+{
+  for (map<string, ARFFData* >::iterator it=dataset.begin(); it!=dataset.end(); ++it) {
+    delete it->second;
+  }
+}
+
+
 ArffFileHandling::ARFFData::ARFFData()
 {
   _data = NULL;
@@ -32,6 +45,25 @@ ArffFileHandling::ARFFData::ARFFData()
 ArffFileHandling::ARFFData::~ARFFData()
 {
   delete _data;
+}
+
+void ArffFileHandling::ARFFData::copyMetaData(const ARFFData& rvalue)
+{
+  _featList = rvalue._featList;
+  _class2index = rvalue._class2index;
+  _index2class = rvalue._index2class;
+}
+
+void ArffFileHandling::ARFFData::replaceAndOwn(ARFFData* content)
+{
+  delete _data;
+  _data = content->_data;
+
+  _valid = (_data != NULL);
+
+  copyMetaData(*content);
+
+  content->_data = NULL;
 }
 
 bool ArffFileHandling::ARFFData::checkFeatureListValidity() const
@@ -297,6 +329,43 @@ bool ArffFileHandling::ARFFData::removeFeature(string name)
     res = false;
   } else {
     res = removeFeature(index);
+  }
+
+  return res;
+}
+
+ArffFileHandling::ARFFData* ArffFileHandling::ARFFData::filterClassData(vector<string> classnames) const
+{
+  if (classnames.size()==0){ return NULL; }
+
+  ARFFData* res = new ARFFData();
+  map<int, int> mapNew2Old, mapOld2New;
+
+  int i=0;
+  for (vector<string>::iterator nameIt=classnames.begin(); nameIt!=classnames.end(); ++nameIt){
+    ClassValuesByName::const_iterator it = _class2index.find(*nameIt);
+    if (it!=_class2index.end()){
+      res->addClass(i, *nameIt);
+      mapNew2Old[i] = it->second;
+      mapOld2New[it->second] = i;
+      ++i;
+    }
+  }
+
+  res->_featList = _featList;
+  res->initData();
+  TrainingsDataContainer* resData = res->getData();
+
+  for (unsigned int actI=0; actI<_data->getNumberOfActivities(); ++actI){
+    if (mapOld2New.count(actI)==0) continue;
+    for (int seqI=0; seqI<_data->getNumberOfSequences(actI); ++seqI){
+      FeatureContainerSequence* seq = new FeatureContainerSequence();
+      for (int frameI=0; frameI<_data->getSequenceLength(actI, seqI); ++frameI){
+	FeatureContainer* f = new FeatureContainer(*(_data->getFrame(actI, seqI, frameI)));
+	seq->append(f);
+      }
+      resData->addData(mapOld2New[actI], seq);
+    }
   }
 
   return res;

@@ -5,8 +5,8 @@
 
     Please put your documentation for this file here.
 
-    \par Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-    \par Date of last change: 09.08.10
+    \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
+    \par Date of last change: 20.05.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2010-08-09
@@ -38,6 +38,7 @@ class ARFFFileHandlerTests : public CPPUNIT_NS::TestFixture {
   CPPUNIT_TEST_SUITE (ARFFFileHandlerTests);
   CPPUNIT_TEST (LoadTest);
   CPPUNIT_TEST (SaveTest);
+  CPPUNIT_TEST (SplitClassesTest);
   CPPUNIT_TEST_SUITE_END ();
 
  private:
@@ -45,6 +46,7 @@ class ARFFFileHandlerTests : public CPPUNIT_NS::TestFixture {
 protected:
   void LoadTest(void);
   void SaveTest(void);
+  void SplitClassesTest(void);
   
 public:
   void setUp(void);

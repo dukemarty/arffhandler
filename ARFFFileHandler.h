@@ -8,8 +8,8 @@
     Creator: Martin Lösch (<loesch@ira.uka.de>)
     Date of creation: 07.06.08
 
-    Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    Date of last change: 24.08.11
+    Last Author: Martin Loesch (<professional@@martinloesch.net>)
+    Date of last change: 20.05.13
 
     Revision: 0.1
 
@@ -38,6 +38,20 @@ using namespace std;
 
 namespace ArffFileHandling {
 
+  // forward declaration
+  class ARFFFileHandler;
+
+  class ARFFFileHandlerSet {
+  public:
+    std::map<string, ARFFFileHandler* > dataset;
+
+    ARFFFileHandlerSet();
+    ~ARFFFileHandlerSet();
+
+    std::map<string, ARFFFileHandler* >::iterator begin(){ return dataset.begin(); }
+    std::map<string, ARFFFileHandler* >::iterator end(){ return dataset.end(); }
+  };
+
   /*!
     \class ARFFFileHandler
     \brief Gives functionality to load and save ARFF files.
@@ -63,6 +77,13 @@ namespace ArffFileHandling {
       @param filename name of the read file (used in the header text)
     */
     void printHeader(ostream& out, string filename) const;
+
+    /*!
+      \brief Split arff data set into data of single classes.
+      
+      @return set of ARFFData objects, one for each class
+    */
+    ARFFDataSet splitClasses() const;
     
   protected:
     
@@ -79,6 +100,14 @@ namespace ArffFileHandling {
       @param filename name of an arff file which is loaded directly
     */
     ARFFFileHandler(string filename);
+    /*!
+      \brief Initializefile handler directly with arff content.
+
+      ATTENTION: The content is not copied, but the ownership of the data pointer is taken over by the new file handler!
+      
+      @param content pointer to content data object.
+    */
+    ARFFFileHandler(ARFFData* content);
     ~ARFFFileHandler();
     //@}
 
@@ -119,6 +148,10 @@ namespace ArffFileHandling {
       @return 0 if the removal was successful, 1 if it could not be removed (unknown reason), 2 if the feature name is used more than once
     */     
     int removeFeature(string name);
+    //@}
+
+    //@{
+    ARFFFileHandlerSet splitSingleClasses() const;
     //@}
     
     /*!

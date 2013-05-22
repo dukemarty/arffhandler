@@ -5,8 +5,8 @@
     Creator: Martin Lösch (<loesch@ira.uka.de>)
     Date of creation: 07.06.08
 
-    Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    Date of last change: 08.11.11
+    Last Author: Martin Loesch (<professional@@martinloesch.net>)
+    Date of last change: 22.05.13
 
     Revision: 0.1
 
@@ -33,6 +33,19 @@ namespace bpt = boost::posix_time;
 namespace ba = boost::algorithm;
 
 
+
+ArffFileHandling::ARFFFileHandlerSet::ARFFFileHandlerSet()
+{
+}
+
+ArffFileHandling::ARFFFileHandlerSet::~ARFFFileHandlerSet()
+{
+  for (map<string, ARFFFileHandler* >::iterator it=dataset.begin(); it!=dataset.end(); ++it) {
+    delete it->second;
+  }
+}
+
+
 ArffFileHandling::ARFFFileHandler::ARFFFileHandler()
 {
   _filename = "";
@@ -48,6 +61,11 @@ ArffFileHandling::ARFFFileHandler::ARFFFileHandler(string filename)
     _filename = "";
     _arffcontent.clear();
   }
+}
+
+ArffFileHandling::ARFFFileHandler::ARFFFileHandler(ARFFData* content)
+{
+  _arffcontent.replaceAndOwn(content);
 }
 
 ArffFileHandling::ARFFFileHandler::~ARFFFileHandler()
@@ -89,6 +107,20 @@ void ArffFileHandling::ARFFFileHandler::printHeader(ostream& out, string filenam
   out << endl;
     
   out << "@data" << endl;
+}
+
+ArffFileHandling::ARFFDataSet ArffFileHandling::ARFFFileHandler::splitClasses() const
+{
+  ARFFDataSet res;
+  vector<string> names;
+  
+  for (unsigned int i=0; i<_arffcontent.getNumberOfClasses(); ++i){
+    names.clear();
+    names.push_back(_arffcontent.getClassName(i));
+    res.dataset[_arffcontent.getClassName(i)] = _arffcontent.filterClassData(names);
+  }
+  
+  return res;
 }
 
 bool ArffFileHandling::ARFFFileHandler::load(string filename)
@@ -254,6 +286,18 @@ int ArffFileHandling::ARFFFileHandler::removeFeature(string name)
     }
   } else {
     res = 2;
+  }
+
+  return res;
+}
+
+ArffFileHandling::ARFFFileHandlerSet ArffFileHandling::ARFFFileHandler::splitSingleClasses() const
+{
+  ARFFDataSet dataset = splitClasses();
+  ARFFFileHandlerSet res;
+
+  for (map<string, ARFFData* >::iterator it=dataset.begin(); it!=dataset.end(); ++it){
+    res.dataset[it->first] = new ARFFFileHandler(it->second);
   }
 
   return res;
