@@ -5,8 +5,8 @@
 
     Please put your documentation for this file here.
 
-    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 25.08.11
+    \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
+    \par Date of last change: 21.05.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -36,6 +36,22 @@ using namespace std;
 */
 namespace ArffFileHandling {
 
+  // forward declaration
+  class ARFFData;
+
+  class ARFFDataSet {
+  public:
+    map<string, ARFFData* > dataset;
+
+    ARFFDataSet();
+    ~ARFFDataSet();
+
+    map<string, ARFFData* >::iterator begin(){ return dataset.begin(); }
+    map<string, ARFFData* >::iterator end(){ return dataset.end(); }
+
+    ARFFData*& operator[](string key){ return dataset[key]; }
+  };
+  
   //! type for numbered feature lists
   typedef map<int, string> FeatureList;
   //! type for mapping from a unique class name to an id number
@@ -98,6 +114,13 @@ namespace ArffFileHandling {
     bool checkValidity() const;
 
     /*!
+      \brief Copy "meta data" from other object (i.e. feature and class<->index lists).
+
+      @param rvalue object whose data is copied
+    */
+    void copyMetaData(const ARFFData& rvalue);
+    
+    /*!
       \brief Find all feature indizes for a given feature name.
 
       @param name of feature
@@ -131,6 +154,13 @@ namespace ArffFileHandling {
     ~ARFFData();
     //@}
 
+    /*!
+      \brief Replace current content with parameter and take ownership of its allocated memory.
+
+      @param content new content for the object
+    */
+    void replaceAndOwn(ARFFData* content);
+    
     /*!
       \brief Check whether the object is valid for use.
 
@@ -289,6 +319,14 @@ namespace ArffFileHandling {
       @return true if a feature was removed, false else (e.g. because the name does not exist)
     */
     bool removeFeature(string name);
+
+    /*!
+      \brief Extract all data of a set of classes.
+
+      @param classnames names of classes from which to extract data (at least one string has to be given!)
+      @return new object containing only the filtered data (in copy) - caller has ownership of this memory!
+    */
+    ARFFData* filterClassData(vector<string> classnames) const;
     //@}
   };
 

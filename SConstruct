@@ -1,7 +1,7 @@
 # -*- python -*- coding: latin1
 #
-# Last Author: Martin Loesch (<loesch@@ira.uka.de>)
-# Date of last change: 09.08.10
+# Last Author: Martin Loesch (<professional@@martinloesch.net>)
+# Date of last change: 22.05.13
 #
 # Author: Martin Loesch (loesch@@ira.uka.de)
 # Date: 2009-11-26
@@ -27,7 +27,7 @@ system_libraries = [] # 'gcc', 'System', 'stdc++', 'SystemStubs']
 
 
 
-external_libraries = ['boost_program_options-mt', 'boost_date_time-mt']
+external_libraries = ['boost_program_options-mt', 'boost_date_time-mt', 'boost_filesystem-mt', 'boost_system-mt']
 project_libraries = []
 
 

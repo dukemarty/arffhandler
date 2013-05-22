@@ -5,8 +5,8 @@
 
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
-  \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-  \par Date of last change: 08.11.11
+  \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
+  \par Date of last change: 20.05.13
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -208,10 +208,10 @@ namespace ArffFileHandling {
   */
   class TrainingsDataContainer {
   private:
-    //! number of activities to be trained (fixed to 2, only for compatibility with old code base)
+    //! number of classes
     unsigned int _numberOfActivities;
 
-    //! list of training sequences, one for positive and one for negative examples
+    //! list of training sequences, one for each class
     vector< vector<FeatureContainerSequence* > > _data;
 
     /*!

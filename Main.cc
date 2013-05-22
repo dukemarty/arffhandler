@@ -2,8 +2,8 @@
 
     \file  Main.cc
 
-    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 25.08.11
+    \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
+    \par Date of last change: 22.05.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-26
@@ -17,10 +17,14 @@
 /* system includes */
 #include <assert.h>
 #include <iostream>
+#include <boost/filesystem.hpp>
 
 /* my includes */
 #include "Main.h"
 #include "arffhandlerlib.h"
+
+
+namespace bfs = boost::filesystem;
 
 
 //@{
@@ -46,12 +50,14 @@ OperationMode parseOperationMode(string mode)
 {
   OperationMode res=INVALID;
   
-  if ( mode=="copy" || mode=="cp"){
+  if ( mode=="copy" || mode=="cp" ){
     res = COPY; }
-  else if ( mode=="show" || mode=="sh"){
+  else if ( mode=="show" || mode=="sh" ){
     res = SHOW; }
-  else if ( mode=="remove" || mode=="rm"){
+  else if ( mode=="remove" || mode=="rm" ){
     res = REMFEATURE; }
+  else if ( mode=="splitclasses" || mode=="sc" ){
+    res = SPLITCLASSES; }
   else {
     res = INVALID; }
 
@@ -68,6 +74,7 @@ void printUsageHint(string progname, bpo::options_description& options)
   cout << " copy,cp     Copy the (first) loaded file to the save file(s)." << endl;
   cout << " remove,rm   Remove feature, which has to be given using 'feature' option." << endl;
   cout << " show,sh     Show the (first) loaded file to standard output." << endl;
+  cout << " splitclasses, sc    Split data into single files for each class." << endl;
 }
 
 int performCopy()
@@ -118,6 +125,26 @@ int performRemFeature()
   }
   
   return res;
+}
+
+int performSplitClasses()
+{
+  ArffFileHandling::ARFFFileHandler handler;
+  handler.load(g_inputfilename);
+
+  std::cerr << "** Successfully loaded file :  " << g_inputfilename << std::endl;
+
+  ArffFileHandling::ARFFFileHandlerSet classData = handler.splitSingleClasses();
+
+  bfs::path basename = bfs::path(g_outputfilename).parent_path();
+  basename /= bfs::path(g_outputfilename).stem();
+  bfs::path suffix = bfs::path(g_outputfilename).extension();
+  for (std::map<string, ArffFileHandling::ARFFFileHandler* >::iterator it=classData.begin(); it!=classData.end(); ++it){
+    string filename = basename.native() + "-" + it->first + suffix.native();
+    it->second->save(filename);
+  }
+
+  return 0;
 }
 
 int performShow()
@@ -176,6 +203,18 @@ int processShowParameters(bpo::variables_map& vm)
   return 0;
 }
 
+int processSplitclassParameters(bpo::variables_map& vm)
+{
+  if ( !vm.count(c_LoadOption) || !vm.count(c_SaveOption) ){
+    return 1;
+  }
+
+  g_inputfilename = vm[c_LoadOption].as<string>();
+  g_outputfilename = vm[c_SaveOption].as<string>();
+
+  return 0;
+}
+
 void processCommandlineParameters(int argc, char **argv)
 {
   try {
@@ -218,6 +257,8 @@ void processCommandlineParameters(int argc, char **argv)
 	break;
       case SHOW: parseRes = processShowParameters(vm);
 	break;
+      case SPLITCLASSES: parseRes = processSplitclassParameters(vm);
+	break;
       case INVALID: printUsageHint(argv[0], optionsDescr);
 	exit(1);
       default: break;
@@ -251,6 +292,8 @@ int main(int argc, char **argv)
     case REMFEATURE: res = performRemFeature();
       break;
     case SHOW: res = performShow();
+      break;
+    case SPLITCLASSES: res = performSplitClasses();
       break;
     default: exit(1);
   }
