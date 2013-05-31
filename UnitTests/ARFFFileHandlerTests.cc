@@ -3,7 +3,7 @@
     \file  ARFFFileHandlerTests.cc
 
     \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
-    \par Date of last change: 20.05.13
+    \par Date of last change: 31.05.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2010-08-09
@@ -55,7 +55,7 @@ void ARFFFileHandlerTests::SaveTest(void)
 void ARFFFileHandlerTests::SplitClassesTest(void)
 {
   ARFFFileHandler test1;
-  test.load("iris.arff");
+  test1.load("iris.arff");
 
   
 }

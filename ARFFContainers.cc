@@ -2,8 +2,8 @@
 
     \file  ARFFContainers.cc
 
-    \par Last Author: Martin Loesch (<martin.loesch@@kit.edu>)
-    \par Date of last change: 08.11.11
+    \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
+    \par Date of last change: 31.05.13
 
     \author    Martin Loesch (<loesch@ira.uka.de>)
     \date      08.02.07
@@ -52,7 +52,7 @@ ArffFileHandling::FeatureContainer::FeatureContainer(const int numberOfFeatures)
     m_data[i] = 0.0;
   }
   
-  assert (m_data!=NULL);
+  assert (checkIsValid());
 }
 
 ArffFileHandling::FeatureContainer::FeatureContainer(const ArffFileHandling::FeatureContainer& orig)
@@ -68,7 +68,7 @@ ArffFileHandling::FeatureContainer::FeatureContainer(const ArffFileHandling::Fea
 
   memcpy(m_data, orig.m_data, m_numberOfFeatures*sizeof(double));
 
-  assert (m_data!=NULL);
+  assert (checkIsValid());
 }
 
 ArffFileHandling::FeatureContainer::~FeatureContainer()
@@ -103,7 +103,7 @@ void ArffFileHandling::FeatureContainer::setNumberOfFeatures(const unsigned int 
 
   for (unsigned int i=0; i<m_numberOfFeatures; i++){ m_data[i] = 0; }
 
-  assert (m_data!=NULL);
+  assert (checkIsValid());
 }
 
 double ArffFileHandling::FeatureContainer::getData(const unsigned int index) const
@@ -146,10 +146,11 @@ ArffFileHandling::FeatureContainer& ArffFileHandling::FeatureContainer::operator
   }
     
   assert ( (m_numberOfFeatures==0 && m_data==NULL) || (m_data!=NULL) );
+  assert ( isEqual(&right) );
   return *this;
 }
 
-const bool ArffFileHandling::FeatureContainer::isEqual(ArffFileHandling::FeatureContainer* other) const
+const bool ArffFileHandling::FeatureContainer::isEqual(const ArffFileHandling::FeatureContainer* other) const
 {
   assert (checkIsValid());
 
@@ -167,6 +168,8 @@ const bool ArffFileHandling::FeatureContainer::isEqual(ArffFileHandling::Feature
 
 bool ArffFileHandling::FeatureContainer::removeFeature(const unsigned int index)
 {
+  assert (checkIsValid());
+  
   if (index>=m_numberOfFeatures){ return false; }
 
   double* newdata=NULL;
@@ -190,6 +193,7 @@ bool ArffFileHandling::FeatureContainer::removeFeature(const unsigned int index)
 
   --m_numberOfFeatures;
 
+  assert (checkIsValid());
   return true;
 }
 
@@ -199,6 +203,13 @@ bool ArffFileHandling::FeatureContainer::removeFeature(const unsigned int index)
 
 ArffFileHandling::FeatureContainerSequence::FeatureContainerSequence()
 {
+}
+
+ArffFileHandling::FeatureContainerSequence::FeatureContainerSequence(const FeatureContainerSequence& orig)
+{
+  for (vector<FeatureContainer* >::const_iterator it=orig._list.begin(); it!=orig._list.end(); ++it){
+    append(*it);
+  }
 }
 
 ArffFileHandling::FeatureContainerSequence::~FeatureContainerSequence()

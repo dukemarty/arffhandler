@@ -3,7 +3,7 @@
     \file  ARFFData.cc
 
     \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
-    \par Date of last change: 22.05.13
+    \par Date of last change: 31.05.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-29
@@ -339,14 +339,13 @@ ArffFileHandling::ARFFData* ArffFileHandling::ARFFData::filterClassData(vector<s
   if (classnames.size()==0){ return NULL; }
 
   ARFFData* res = new ARFFData();
-  map<int, int> mapNew2Old, mapOld2New;
+  map<int, int> mapOld2New;
 
   int i=0;
   for (vector<string>::iterator nameIt=classnames.begin(); nameIt!=classnames.end(); ++nameIt){
     ClassValuesByName::const_iterator it = _class2index.find(*nameIt);
     if (it!=_class2index.end()){
       res->addClass(i, *nameIt);
-      mapNew2Old[i] = it->second;
       mapOld2New[it->second] = i;
       ++i;
     }
@@ -359,12 +358,7 @@ ArffFileHandling::ARFFData* ArffFileHandling::ARFFData::filterClassData(vector<s
   for (unsigned int actI=0; actI<_data->getNumberOfActivities(); ++actI){
     if (mapOld2New.count(actI)==0) continue;
     for (int seqI=0; seqI<_data->getNumberOfSequences(actI); ++seqI){
-      FeatureContainerSequence* seq = new FeatureContainerSequence();
-      for (int frameI=0; frameI<_data->getSequenceLength(actI, seqI); ++frameI){
-	FeatureContainer* f = new FeatureContainer(*(_data->getFrame(actI, seqI, frameI)));
-	seq->append(f);
-      }
-      resData->addData(mapOld2New[actI], seq);
+      resData->addData(mapOld2New[actI], new FeatureContainerSequence(*(_data->getSequence(actI, seqI))));
     }
   }
 

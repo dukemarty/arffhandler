@@ -6,7 +6,7 @@
   Different types of special containers are used in the cHARm system to process data in the extraction, training and recognition of features for the classification of human activity.
     
   \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
-  \par Date of last change: 20.05.13
+  \par Date of last change: 31.05.13
 
   \author    Martin Loesch (<loesch@ira.uka.de>)
   \date      08.02.07
@@ -83,7 +83,7 @@ namespace ArffFileHandling {
     /*!
       \brief Copy constructor.
 
-      @post m_data == orig.m_data
+      @post \forall i: m_data[i] == orig.m_data[i]
       @post m_numberOfFeatures == orig.m_numberOfFeatures
       @post \f$ \forall_i\f$ m_data[i] == orig.m_data[i]
     */
@@ -121,8 +121,8 @@ namespace ArffFileHandling {
     //@{
     //! \name Tester
     const bool isEmpty() const { return (m_data==NULL); };
-    const bool isEqual(FeatureContainer* other) const;
-    const bool operator==(FeatureContainer& rvalue) const { return isEqual(&rvalue); };
+    const bool isEqual(const FeatureContainer* other) const;
+    const bool operator==(const FeatureContainer& rvalue) const { return isEqual(&rvalue); };
     //@}
 
     //@{
@@ -158,6 +158,10 @@ namespace ArffFileHandling {
       \brief Standard constructor.
     */
     FeatureContainerSequence();
+    /*!
+      \brief Copy constructor.
+    */
+    FeatureContainerSequence(const FeatureContainerSequence& orig);
     ~FeatureContainerSequence();
     //@}
 
@@ -248,8 +252,9 @@ namespace ArffFileHandling {
     unsigned int getNumberOfActivities() const { return _numberOfActivities; };
     void addData(const unsigned int activity, FeatureContainerSequence* newData);
     int getNumberOfSequences(const unsigned int activity) const { return _data[activity].size(); };
-    int getSequenceLength(const int unsigned activity, const int sequence) const { return _data[activity][sequence]->getSeqLength(); };
-    FeatureContainer* getFrame(const int unsigned activity, const int sequence, const int frame) const { return _data[activity][sequence]->getContainer(frame); };
+    FeatureContainerSequence* getSequence(const unsigned int activity, const int sequence) const { return _data[activity][sequence]; };
+    int getSequenceLength(const unsigned int activity, const int sequence) const { return _data[activity][sequence]->getSeqLength(); };
+    FeatureContainer* getFrame(const unsigned int activity, const int sequence, const int frame) const { return _data[activity][sequence]->getContainer(frame); };
     int getTotalNumberOfContainers() const;
     //@}
 
