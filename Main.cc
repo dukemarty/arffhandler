@@ -3,7 +3,7 @@
     \file  Main.cc
 
     \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
-    \par Date of last change: 22.05.13
+    \par Date of last change: 11.06.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-26
@@ -71,14 +71,17 @@ void printUsageHint(string progname, bpo::options_description& options)
   cout << options << endl;
   cout << endl;
   cout << "The command controls what the manager does with the given files. Possible values are:" << endl;
-  cout << " copy,cp     Copy the (first) loaded file to the save file(s)." << endl;
-  cout << " remove,rm   Remove feature, which has to be given using 'feature' option." << endl;
-  cout << " show,sh     Show the (first) loaded file to standard output." << endl;
-  cout << " splitclasses, sc    Split data into single files for each class." << endl;
+  cout << "  copy,cp          Copy the (first) loaded file to the save file(s)." << endl;
+  cout << "  remove,rm        Remove feature, which has to be given using 'feature' option." << endl;
+  cout << "  show,sh          Show the (first) loaded file to standard output." << endl;
+  cout << "  splitclasses,sc  Split data into single files for each class." << endl;
 }
 
 int performCopy()
 {
+  assert (g_inputfilename != "");
+  assert (g_outputfilename != "");
+  
   ArffFileHandling::ARFFFileHandler handler;
 
   handler.load(g_inputfilename);
@@ -92,6 +95,9 @@ int performCopy()
 
 int performRemFeature()
 {
+  assert (g_inputfilename != "");
+  assert (g_featurename != "");
+  
   ArffFileHandling::ARFFFileHandler handler;
   handler.load(g_inputfilename);
 
@@ -129,6 +135,9 @@ int performRemFeature()
 
 int performSplitClasses()
 {
+  assert (g_inputfilename != "");
+  assert (g_outputfilename != "");
+  
   ArffFileHandling::ARFFFileHandler handler;
   handler.load(g_inputfilename);
 
@@ -149,6 +158,8 @@ int performSplitClasses()
 
 int performShow()
 {
+  assert (g_inputfilename != "");
+  
   ArffFileHandling::ARFFFileHandler handler;
   handler.load(g_inputfilename);
 
@@ -237,7 +248,7 @@ void processCommandlineParameters(int argc, char **argv)
 
     bpo::options_description optionsDescr("All options");
     optionsDescr.add(optDesc).add(reqDesc);
-    
+   
     // evaluate command line parameters
     bpo::variables_map vm;
     bpo::store(bpo::command_line_parser(argc, argv).options(optionsDescr).positional(pdesc).run(), vm);
