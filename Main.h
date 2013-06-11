@@ -1,12 +1,15 @@
 /*! \if exist This is -*- C++ -*- from nbg \endif
 
     \file  Main.h
-    \brief 
+    \brief Driver (main program) for command line-based usage of ARFFHandler lib.
 
-    Please put your documentation for this file here.
+    Basic function: Parse command parameter for supported functionality (currently:
+    copy ARFF file, show content, remove single features, split ARFF file with
+    multiple classes into multiple files with a single class each), then parse
+    the required parameters for these diverse functions.
 
     \par Last Author: Martin Loesch (<professional@@martinloesch.net>)
-    Date of last change: 20.05.13
+    Date of last change: 11.06.13
 
     \author   Martin Loesch (<loesch@@ira.uka.de>)
     \date     2009-11-26
@@ -41,13 +44,13 @@ typedef enum {
 
 
 //! global operation mode
-static OperationMode g_mode;
+static OperationMode g_mode = INVALID;
 //! global name of input file
-static std::string g_inputfilename;
+static std::string g_inputfilename = "";
 //! global name of output file
-static std::string g_outputfilename;
+static std::string g_outputfilename = "";
 //! global name of chosen single feature
-static std::string g_featurename;
+static std::string g_featurename = "";
 
 
 /*!
@@ -65,6 +68,10 @@ OperationMode parseOperationMode(string mode);
   @param options object containing the allowed options together with their description
 */
 void printUsageHint(string progname, bpo::options_description& options);
+
+
+//@{
+//! \name Functions performing commands
 
 /*!
   \brief Perform a copy operation.
@@ -101,6 +108,12 @@ int performShow();
   @return 0 if everything went right, 1 else
 */
 int performSplitClasses();
+
+//@}
+
+
+//@{
+//! \name Functions parsing required command parameters
 
 /*!
   \brief Parse parameters for a copy operation.
@@ -147,6 +160,7 @@ int processSplitclassParameters(bpo::variables_map& vm);
   @param argv same name and function as argv in main() routine
 */
 void processCommandlineParameters(int argc, char **argv);
-  
+
+//@}
 
 #endif /* MAIN_H */
