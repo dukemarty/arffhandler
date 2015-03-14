@@ -4,7 +4,7 @@ Simple library for handling and manipulating ARFF files.
 
 ## Overview
 
-Currently, the most convenient way to manipulate ARFF files is via [http://www.cs.waikato.ac.nz/ml/weka/ WEKA]. But if using ARFF files in a C/C++ environment, it would of course be more convenient to have a handy library available for that.
+Currently, the most convenient way to manipulate ARFF files is via [WEKA](http://www.cs.waikato.ac.nz/ml/weka/). But if using ARFF files in a C/C++ environment, it would of course be more convenient to have a handy library available for that.
 This is what this project provides.
 
 ## Architecture: Summary of main components and their relation.
