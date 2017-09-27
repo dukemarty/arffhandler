@@ -7,6 +7,10 @@ Simple library for handling and manipulating ARFF files.
 Currently, the most convenient way to manipulate ARFF files is via [WEKA](http://www.cs.waikato.ac.nz/ml/weka/). But if using ARFF files in a C/C++ environment, it would of course be more convenient to have a handy library available for that.
 This is what this project provides.
 
+## Vision
+
+In the future, it will be super-easy to remove columns or rows or to merge them. Using a GUI as well as directly from the command line.
+
 ## Architecture: Summary of main components and their relation.
 
 ### Main components
